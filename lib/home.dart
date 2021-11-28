@@ -1,3 +1,4 @@
+import 'package:digital_notice_board/share_post.dart';
 import 'package:digital_notice_board/users.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
@@ -35,6 +36,15 @@ class _HomePageState extends State<HomePage> {
           actions: [Icon(Icons.search, color: Colors.black,)],
         ),
         body: _buildFeed(width),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor:Colors.green,child:Icon(Icons.add),onPressed: (){
+        Navigator.push(
+            context,
+        MaterialPageRoute(
+          builder: (context) => SharePost(),
+        )
+        );
+      }, ),
 
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.grey[300],
