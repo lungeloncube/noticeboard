@@ -1,7 +1,8 @@
-import 'package:digital_notice_board/widgets/outlined_button.dart';
+import 'package:digital_notice_board/widgets/bordered_text_field.dart';
+import 'package:digital_notice_board/widgets/custom_dropdown.dart';
+import 'package:digital_notice_board/widgets/round_button.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class ReminderPage extends StatefulWidget {
   @override
@@ -12,30 +13,22 @@ class _ReminderPageState extends State<ReminderPage> {
   var maxLength = 160;
   var textLength = 0;
 
-
   DateTime currentDate = DateTime.now();
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime pickedDate = await showDatePicker(
-        context: context,
-        initialDate: currentDate,
-        firstDate: DateTime(2015),
-        lastDate: DateTime(2050));
-    if (pickedDate != null && pickedDate != currentDate)
-      setState(() {
-        currentDate = pickedDate;
-      });
-  }
   String valueChoose;
-  List listItem = ["Repeats monthly", "Repeats weekly", "Repeats daily", "Repeats hourly"];
-
+  List listItem = [
+    "Repeats monthly",
+    "Repeats weekly",
+    "Repeats daily",
+    "Repeats hourly"
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
             title: Text('Reminder',
-                style: TextStyle(fontFamily: 'Trebuchet', fontSize: 20))),
+                style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22))),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -48,7 +41,7 @@ class _ReminderPageState extends State<ReminderPage> {
                         style: TextStyle(
                             fontFamily: 'Trebuchet',
                             fontWeight: FontWeight.bold,
-                            fontSize: 16)),
+                            fontSize: 18)),
                     Text('${textLength.toString()}/${maxLength.toString()}',
                         style: TextStyle(
                             fontFamily: 'Trebuchet',
@@ -58,12 +51,23 @@ class _ReminderPageState extends State<ReminderPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: textField(),
-              ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: BorderedTextField(
+                    onChanged: (value) {
+                      setState(() {
+                        textLength = value.length;
+                      });
+                    },
+                    maxLength: null,
+                    hintText: 'Type here...',
+                    minLength: 7,
+                  )
+                  //textField(),
+                  ),
+              SizedBox(height: 8),
               Container(
                 height: 40,
-                color: Colors.grey[200],
+                color: Colors.grey[300],
                 child: Row(
                   children: [
                     Padding(
@@ -73,7 +77,7 @@ class _ReminderPageState extends State<ReminderPage> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Trebuchet',
-                            fontSize: 16),
+                            fontSize: 18),
                       ),
                     )
                   ],
@@ -89,9 +93,22 @@ class _ReminderPageState extends State<ReminderPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.calendar_today_outlined,
-                            color: Colors.blue, size: 30),
-                        Text(DateFormat.yMMMMd('en_US').format(currentDate))
+                        GestureDetector(
+                          onTap: () {
+                            _selectDate(context);
+                          },
+                          child: Icon(Icons.calendar_today_outlined,
+                              color: Colors.blue, size: 30),
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              _selectDate(context);
+                            },
+                            child: Text(
+                              DateFormat.yMMMMd('en_US').format(currentDate),
+                              style: TextStyle(
+                                  fontSize: 16, fontFamily: 'Trebuchet'),
+                            ))
                       ],
                     ),
                     SizedBox(
@@ -100,9 +117,21 @@ class _ReminderPageState extends State<ReminderPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.watch_outlined,
-                            color: Colors.blue, size: 30),
-                        Text(DateFormat.jm().format(currentDate))
+                        GestureDetector(
+                          onTap: () {
+                            _selectTime();
+                          },
+                          child: Icon(Icons.watch_outlined,
+                              color: Colors.blue, size: 30),
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              _selectDate(context);
+                            },
+                            child: Text('${_time.hour}: ${_time.minute}',
+                                //child: Text(DateFormat.jm().format(currentDate),
+                                style: TextStyle(
+                                    fontSize: 16, fontFamily: 'Trebuchet')))
                       ],
                     ),
                     SizedBox(
@@ -111,9 +140,12 @@ class _ReminderPageState extends State<ReminderPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(Icons.all_inclusive_sharp,
-                            color: Colors.blue, size: 30),
-                        buildDropdownButton()
+                        GestureDetector(
+                          onTap: _buildDropdownButton,
+                          child: Icon(Icons.all_inclusive_sharp,
+                              color: Colors.blue, size: 30),
+                        ),
+                        _buildDropdownButton()
                       ],
                     ),
                     SizedBox(
@@ -124,28 +156,18 @@ class _ReminderPageState extends State<ReminderPage> {
               ),
               Column(
                 children: [
-                  Button(
+                  RoundButton(
+                    title: 'Cancel',
+                    color: Colors.grey[400],
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontFamily: 'Trebuchet'),
-                    backgroundColor: Colors.grey[400],
-                    primary: Colors.white,
-                    child: 'Cancel',
                   ),
                   SizedBox(height: 10),
-                  Button(
-                    onPressed: () => _selectDate(context),
-                    textStyle: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontFamily: 'Trebuchet'),
-                    backgroundColor: Colors.blue,
-                    primary: Colors.white,
-                    child: 'Save',
+                  RoundButton(
+                    title: 'Save',
+                    color: Colors.blue,
+                    onPressed: () {},
                   ),
                 ],
               )
@@ -154,53 +176,50 @@ class _ReminderPageState extends State<ReminderPage> {
         ));
   }
 
-
-
-  DropdownButton<String> buildDropdownButton() {
-    return DropdownButton<String>(
-      hint: Text('Select'),
-      dropdownColor: Colors.white,
-      icon: Icon(Icons.arrow_drop_down),
-      iconSize: 40.0,
-      style: TextStyle(
-        fontSize: 14.0,
-        color: Colors.black,
-      ),
-      value: valueChoose,
+  Widget _buildDropdownButton() {
+    return CustomDropdown(
+      hintText: 'Select',
+      chosenValue: valueChoose,
       onChanged: (newValue) {
         setState(() {
           valueChoose = newValue;
         });
       },
-      items: listItem
-          .map<DropdownMenuItem<String>>((valueItem) {
+      items: listItem.map<DropdownMenuItem<String>>((valueItem) {
         return DropdownMenuItem(
           value: valueItem,
-          child: Text(valueItem),
+          child: Text(valueItem,
+              style: TextStyle(fontSize: 16, fontFamily: 'Trebuchet')),
         );
       }).toList(),
-    );}
-  TextField textField() {
-    return TextField(
-                maxLines: null,
-                minLines: 7,
-                maxLength: maxLength,
-                onChanged: (value) {
-                  setState(() {
-                    textLength = value.length;
-                  });
-                },
-                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                decoration: new InputDecoration(
-                  counter: Offstage(),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue),
-                  ),
-                  hintText: 'Type here...',
-                ),
-              );
+    );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime pickedDate = await showDatePicker(
+        context: context,
+        initialDate: currentDate,
+        firstDate: DateTime(2015),
+        lastDate: DateTime(2050));
+    if (pickedDate != null && pickedDate != currentDate)
+      setState(() {
+        currentDate = pickedDate;
+      });
+  }
+
+  TimeOfDay _time = TimeOfDay(
+      hour: (DateTime(DateTime.now().hour).hour),
+      minute: (DateTime(DateTime.now().minute).minute));
+
+  void _selectTime() async {
+    final TimeOfDay newTime = await showTimePicker(
+      context: context,
+      initialTime: _time,
+    );
+    if (newTime != null) {
+      setState(() {
+        _time = newTime;
+      });
+    }
   }
 }

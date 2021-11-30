@@ -1,5 +1,8 @@
-import 'package:digital_notice_board/reply.dart';
+import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/widgets/reply.dart';
 import 'package:digital_notice_board/users.dart';
+import 'package:digital_notice_board/widgets/avatar.dart';
+import 'package:digital_notice_board/widgets/icon_button.dart';
+import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
@@ -13,6 +16,8 @@ class CommentReply extends StatefulWidget {
 }
 
 class _CommentReplyState extends State<CommentReply> {
+  bool isMore = false;
+  bool isLiked = false;
   List<User> users = [
     User(
         firstName: "Lungelo",
@@ -65,7 +70,7 @@ class _CommentReplyState extends State<CommentReply> {
     return Scaffold(
       appBar: AppBar(
           title: Text("Reply to Comment",
-              style: TextStyle(fontFamily: 'Trebuchet', fontSize: 20))),
+              style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22))),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -74,13 +79,25 @@ class _CommentReplyState extends State<CommentReply> {
               child: Row(
                 children: [
                   Text(
-                      'Replies to ${widget.user.firstName} comment on this post.',
-                      style: TextStyle(fontFamily: 'Trebuchet', fontSize: 14)),
+                      'Replies to ${widget.user.firstName}"s comment on this post.',
+                      style: TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                 ],
               ),
             ),
             Divider(color: Colors.black),
-            Reply(firstName: widget.user.firstName, lastName: widget.user.lastName, url: widget.user.url, post: widget.user.post),
+            Reply(
+              firstName: widget.user.firstName,
+              lastName: widget.user.lastName,
+              url: widget.user.url,
+              post: widget.user.post,
+              isLiked: isLiked,
+              onPressed: () {
+                setState(() {
+                  isLiked = !isLiked;
+                });
+              },
+
+            ),
             Padding(
               padding: const EdgeInsets.only(left: 40.0),
               child: _buildFeed(width),
@@ -90,21 +107,10 @@ class _CommentReplyState extends State<CommentReply> {
       ),
       bottomSheet: Container(
           color: Colors.grey[200],
-          child: TextFormField(
-              maxLines: null,
-              //autofocus: true,
-              cursorColor: Colors.black,
-              decoration: new InputDecoration(
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  contentPadding:
-                      EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                  hintText: "Comment")
-              // hintText: "@${widget.user.firstName } ${widget.user.lastName}"),
-              )),
+          child: BorderlessInputField(
+            hint: 'Comment',
+            maxLines: null,
+          )),
     );
   }
 
@@ -126,13 +132,10 @@ class _CommentReplyState extends State<CommentReply> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CircleAvatar(
-                            radius: 18,
-                            backgroundColor: Colors.grey,
-                            child: CircleAvatar(
-                              radius: 16,
-                              backgroundImage: AssetImage(users[index].url),
-                            ),
-                          ),
+                              radius: 18,
+                              backgroundColor: Colors.grey,
+                              child:
+                                  Avatar(path: users[index].url, radius: 16.0)),
                         ],
                       ),
                     ),
@@ -156,7 +159,10 @@ class _CommentReplyState extends State<CommentReply> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  '${users[index].firstName + " " + users[index].lastName}'),
+                                                  '${users[index].firstName + " " + users[index].lastName}',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Trebuchet',
+                                                      fontSize: 14)),
                                             ],
                                           ),
                                         ),
@@ -166,9 +172,17 @@ class _CommentReplyState extends State<CommentReply> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.end,
                                             children: [
-                                              IconButton(
-                                                  icon: Icon(Icons.more_vert),
-                                                  onPressed: () {}),
+                                              ActionIconButton(
+                                                icon: Icons.more_vert,
+                                                onPressed: () {
+                                                  setState(() {
+                                                    isMore = !isMore;
+                                                  });
+                                                },
+                                                color: isMore
+                                                    ? Colors.blue
+                                                    : Colors.grey,
+                                              )
                                             ],
                                           ),
                                         )
@@ -180,19 +194,20 @@ class _CommentReplyState extends State<CommentReply> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                IconButton(
-                                    icon: Icon(
-                                        true
-                                            ? Icons.thumb_up
-                                            : Icons.thumb_up_alt_outlined,
-                                        color: Colors.blue),
-                                    onPressed: () {
-                                      // setState(() {
-                                      //   isLiked=!isLiked;
-                                      // });
-                                    }),
-                                IconButton(
-                                  icon: Icon(Icons.reply, color: Colors.blue),
+                                ActionIconButton(
+                                  icon: isLiked
+                                      ? Icons.thumb_up
+                                      : Icons.thumb_up_alt_outlined,
+                                  color: Colors.blue,
+                                  onPressed: () {
+                                    setState(() {
+                                      isLiked = !isLiked;
+                                    });
+                                  },
+                                ),
+                                ActionIconButton(
+                                  icon: Icons.reply,
+                                  color: Colors.blue,
                                   onPressed: () {
                                     Navigator.pushReplacement(
                                       context,
@@ -202,10 +217,6 @@ class _CommentReplyState extends State<CommentReply> {
                                         ),
                                       ),
                                     );
-                                    // setState(() {
-                                    //   isCommentReply=true;
-                                    //   appBarTitle="Reply to Comment";
-                                    // });
                                   },
                                 ),
                               ],
@@ -222,5 +233,3 @@ class _CommentReplyState extends State<CommentReply> {
     );
   }
 }
-
-

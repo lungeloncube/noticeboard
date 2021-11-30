@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Notice Board",
-            style: TextStyle(fontFamily: 'Trebuchet', fontSize: 20)),
+            style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22)),
         actions: [
           Icon(
             Icons.search,
@@ -124,11 +124,11 @@ class _HomePageState extends State<HomePage> {
                           Text(
                               '${users[index].firstName + " " + users[index].lastName}',
                               style: TextStyle(
-                                  fontFamily: 'Trebuchet', fontSize: 16)),
+                                  fontFamily: 'Trebuchet', fontSize: 18)),
                           SizedBox(height:5),
                           Text(users[index].date,
                               style: TextStyle(
-                                  fontFamily: 'Trebuchet', fontSize: 14))
+                                  fontFamily: 'Trebuchet', fontSize: 16))
                         ],
                       ),
                       Expanded(
@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
                                 });
                               },
                               child: Icon(Icons.more_vert,
-                                  size: 30, color: isMore?Colors.blue[900]:Colors.grey),
+                                  size: 30, color: isMore?Colors.blue:Colors.grey),
                             )
                           ],
                         ),
@@ -154,7 +154,8 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Text('${users[index].post}' * 30, style:TextStyle(fontFamily: 'Trebuchet', fontSize:14)),
+                      Text('${users[index].post}' * 30, style:TextStyle(
+                          fontFamily: 'Trebuchet', fontSize:16)),
                       SizedBox(height: 15),
                       Container(
                           width: width,
@@ -164,17 +165,12 @@ class _HomePageState extends State<HomePage> {
                           )),
                       SizedBox(height: 15),
 
-                      Visibility(
-                        visible: isVisible,
-                        child: Column(
-                          children: [],
-                        ),
-                      )
+
                     ],
                   ),
                 ),
                 Container(
-                  color: Colors.grey[200],
+                  color: Colors.grey[300],
                   child: Row(
 
                     children: [
@@ -198,13 +194,10 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 );
 
-                                // setState(() {
-                                //   isVisible=!isVisible;
-                                // });
                               },
                               child: Padding(
                                 padding: const EdgeInsets.only(left:16),
-                                child: Text("View Comments (5)",style:TextStyle(fontFamily: 'Trebuchet', fontSize:14)),
+                                child: Text("View Comments (5)",style:TextStyle(fontFamily: 'Trebuchet', fontSize:16)),
                               ))),
                       Expanded(
                           flex: 1,
@@ -222,7 +215,21 @@ class _HomePageState extends State<HomePage> {
                       // child: widget(child: Icon(isLiked?Icons.thumb_up:Icons.thumb_up_alt_outlined, color: Colors.blue))),
                       Expanded(
                           flex: 1,
-                          child: Icon(Icons.comment, color: Colors.blue)),
+                          child: GestureDetector(
+                            onTap: (){Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Comments(
+                                  firstName: users[index].firstName,
+                                  lastName: users[index].lastName,
+                                  date: users[index].date,
+                                  post: users[index].post,
+                                  media: users[index].media,
+                                  url: users[index].url,
+                                ),
+                              ),
+                            );},
+                              child: Icon(Icons.comment, color: Colors.blue))),
                     ],
                   ),
                 ),

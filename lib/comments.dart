@@ -1,5 +1,7 @@
 import 'package:digital_notice_board/comment_reply.dart';
 import 'package:digital_notice_board/users.dart';
+import 'package:digital_notice_board/widgets/avatar.dart';
+import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
@@ -29,6 +31,7 @@ class _CommentsState extends State<Comments> {
   bool isLiked = false;
   bool isVisible = true;
   bool isCommentReply = false;
+  bool isMore=false;
 
   static const String LOG_NAME = 'screen.comments';
 
@@ -82,8 +85,9 @@ class _CommentsState extends State<Comments> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Comments", style:TextStyle(fontFamily: 'Trebuchet', fontSize: 20)),
-        actions: [Icon(Icons.search, color: Colors.black),SizedBox(width:10)],
+        title: Text("Comments",
+            style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22)),
+        actions: [Icon(Icons.search, color: Colors.black, size:35), SizedBox(width: 10)],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -100,7 +104,7 @@ class _CommentsState extends State<Comments> {
                         backgroundColor: Colors.grey,
                         child: CircleAvatar(
                           radius: 20,
-                          backgroundImage: AssetImage(widget.url),
+                          backgroundImage: AssetImage(widget.url??'assets/avatar.png'),
                         ),
                       ),
                     ],
@@ -109,16 +113,24 @@ class _CommentsState extends State<Comments> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('${widget.firstName + " " + widget.lastName}',style:TextStyle(fontFamily: 'Trebuchet', fontSize:16)),
-                      SizedBox(height:5),
-                      Text(widget.date,style:TextStyle(fontFamily: 'Trebuchet', fontSize:14))
+                      Text('${widget.firstName + " " + widget.lastName}',
+                          style:
+                              TextStyle(fontFamily: 'Trebuchet', fontSize: 18)),
+                      SizedBox(height: 5),
+                      Text(widget.date,
+                          style:
+                              TextStyle(fontFamily: 'Trebuchet', fontSize: 16))
                     ],
                   ),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        Icon(Icons.more_vert, size: 30, color: Colors.blue[900])
+                        GestureDetector(onTap:(){
+                          setState(() {
+                            isMore=!isMore;
+                          });
+                        },child: Icon(Icons.more_vert, size: 30, color: isMore?Colors.blue:Colors.grey))
                       ],
                     ),
                   ),
@@ -126,16 +138,12 @@ class _CommentsState extends State<Comments> {
               ),
             ),
 
-            // Visibility(
-            //   visible: isVisible,
-            //   child: _buildFeed(width),
-            // )
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
                   Text('${widget.post}' * 30),
-                  SizedBox(height: 15),
+                  SizedBox(height: 16),
                   Container(
                       width: width,
                       child: Image.asset(
@@ -161,7 +169,9 @@ class _CommentsState extends State<Comments> {
                               isVisible = !isVisible;
                             });
                           },
-                          child: Text("Comments:", style:TextStyle(fontFamily: 'Trebuchet', fontSize:14)))),
+                          child: Text("Comments:",
+                              style: TextStyle(
+                                  fontFamily: 'Trebuchet', fontSize: 16)))),
                 ],
               ),
             ),
@@ -170,21 +180,10 @@ class _CommentsState extends State<Comments> {
         ),
       ),
       bottomSheet: Container(
-          color: Colors.grey[200],
-          child: TextFormField(
-            style:TextStyle(fontFamily: 'Trebuchet', fontSize:14),
+          color: Colors.grey[300],
+          child: BorderlessInputField(
+            hint: 'Comment',
             maxLines: null,
-            //autofocus: true,
-            cursorColor: Colors.black,
-            decoration: new InputDecoration(
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-                contentPadding:
-                    EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-                hintText: "Comment",),
           )),
     );
   }
@@ -207,13 +206,10 @@ class _CommentsState extends State<Comments> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           CircleAvatar(
-                            radius: 22,
-                            backgroundColor: Colors.grey,
-                            child: CircleAvatar(
-                              radius: 20,
-                              backgroundImage: AssetImage(users[index].url),
-                            ),
-                          ),
+                              radius: 22,
+                              backgroundColor: Colors.grey,
+                              child:
+                                  Avatar(path: users[index].url, radius: 20.0)),
                         ],
                       ),
                     ),
@@ -237,7 +233,10 @@ class _CommentsState extends State<Comments> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                  '${users[index].firstName + " " + users[index].lastName}',style:TextStyle(fontFamily: 'Trebuchet', fontSize:16)),
+                                                  '${users[index].firstName + " " + users[index].lastName}',
+                                                  style: TextStyle(
+                                                      fontFamily: 'Trebuchet',
+                                                      fontSize: 18)),
                                             ],
                                           ),
                                         ),
@@ -248,14 +247,22 @@ class _CommentsState extends State<Comments> {
                                                 CrossAxisAlignment.end,
                                             children: [
                                               IconButton(
-                                                  icon: Icon(Icons.more_vert),
-                                                  onPressed: () {}),
+                                                  icon: Icon(Icons.more_vert, color: isMore?Colors.blue:Colors.grey),
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      isMore=!isMore;
+                                                    });
+
+                                                  }),
                                             ],
                                           ),
                                         )
                                       ],
                                     ),
-                                    Text('${users[index].post}' * 20,style:TextStyle(fontFamily: 'Trebuchet', fontSize:14)),
+                                    Text('${users[index].post}' * 20,
+                                        style: TextStyle(
+                                            fontFamily: 'Trebuchet',
+                                            fontSize: 16)),
                                   ],
                                 )),
                             Row(

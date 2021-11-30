@@ -9,53 +9,47 @@ class LandingPage extends StatefulWidget {
 }
 
 class _LandingPageState extends State<LandingPage> {
-  static const String LOG_NAME='screen.home';
+  static const String LOG_NAME = 'screen.landing';
   int _selectedIndex = 0;
   final List<Widget> _tabs = [
     HomePage(),
     HomePage(),
     HomePage(),
     HomePage(),
-
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      dev.log('dfsdsf', name: LOG_NAME);
       _selectedIndex = index;
+      dev.log('In the landing page', name: LOG_NAME);
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: _tabs.elementAt(_selectedIndex),
       ),
-
       bottomNavigationBar: BottomNavigationBar(
+        unselectedFontSize: 14.0,
+        selectedFontSize: 16.0,
         backgroundColor: Colors.grey[300],
-        selectedItemColor:Colors.blue[900],
+        selectedItemColor: Colors.blue,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         elevation: 5,
-        type: BottomNavigationBarType.fixed,// this will be set when a new tab is tapped
+        type: BottomNavigationBarType
+            .fixed, // this will be set when a new tab is tapped
         items: [
           BottomNavigationBarItem(
             icon: new Icon(Icons.home),
-            title: new Text('Home', style:TextStyle(fontFamily: 'Trebuchet')),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: new Icon(Icons.notifications),
-            title: new Text('Notifications',style:TextStyle(fontFamily: 'Trebuchet')),
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              title: Text('Search',style:TextStyle(fontFamily: 'Trebuchet'))
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.people),
-              title: Text('Customers',style:TextStyle(fontFamily: 'Trebuchet'))
-          )
+              icon: new Icon(Icons.notifications), label: 'Notifications'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Customers')
         ],
       ),
     );

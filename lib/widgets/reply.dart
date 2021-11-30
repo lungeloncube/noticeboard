@@ -1,3 +1,4 @@
+import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:flutter/material.dart';
 
 class Reply extends StatelessWidget {
@@ -7,12 +8,16 @@ class Reply extends StatelessWidget {
     @required this.lastName,
     @required this.url,
     @required this.post,
+    @required this.isLiked,
+    @required this.onPressed,
   }) : super(key: key);
 
   final String firstName;
   final String lastName;
   final String url;
   final String post;
+  final isLiked;
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +34,7 @@ class Reply extends StatelessWidget {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: Colors.grey,
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundImage: AssetImage(url),
-                    ),
+                    child:Avatar(path: url, radius: 20.0)
                   ),
                 ],
               ),
@@ -60,7 +62,7 @@ class Reply extends StatelessWidget {
                                           '${firstName + " " +lastName}',
                                           style: TextStyle(
                                               fontFamily: 'Trebuchet',
-                                              fontSize: 16)),
+                                              fontSize: 18)),
                                     ],
                                   ),
                                 ),
@@ -78,7 +80,7 @@ class Reply extends StatelessWidget {
                                 )
                               ],
                             ),
-                            Text(post* 20,style:TextStyle(fontFamily: 'Trebuchet', fontSize:14)),
+                            Text(post* 20,style:TextStyle(fontFamily: 'Trebuchet', fontSize:16)),
                           ],
                         )),
                     Row(
@@ -86,30 +88,15 @@ class Reply extends StatelessWidget {
                       children: [
                         IconButton(
                             icon: Icon(
-                                true
+                                isLiked
                                     ? Icons.thumb_up
                                     : Icons.thumb_up_alt_outlined,
                                 color: Colors.blue),
-                            onPressed: () {
-                              // setState(() {
-                              // isLiked=!isLiked;
-                              // });
-                            }),
+                            onPressed: onPressed),
                         IconButton(
                           icon: Icon(Icons.reply, color: Colors.blue),
                           onPressed: () {
-                            // Navigator.push(
-                            //   context,
-                            // MaterialPageRoute(
-                            //   builder: (context) => CommentReply(
-                            //     user: widget.user,
-                            //   ),
-                            // ),
-                            // );
-                            // setState(() {
-                            // isCommentReply=true;
-                            // appBarTitle="Reply to Comment";
-                            // });
+
                           },
                         ),
                       ],
