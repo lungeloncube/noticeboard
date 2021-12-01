@@ -4,6 +4,7 @@ import 'package:digital_notice_board/widgets/Icon.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:developer' as dev;
 
 import 'comments.dart';
@@ -14,6 +15,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  ScrollController _scrollController =
+      new ScrollController(); // set controller on scrolling
+  bool _show = true;
   static const String LOG_NAME = 'screen.home';
 
   bool isLiked = false;
@@ -66,11 +70,43 @@ class _HomePageState extends State<HomePage> {
         post: "lorem ipsum ",
         media: "assets/post_image.jpg")
   ];
+  @override
+  void initState() {
+    super.initState();
+
+    handleScroll();
+  }
 
   @override
   void dispose() {
     _textController.dispose();
+    _scrollController.removeListener(() {});
     super.dispose();
+  }
+
+  void showFloationButton() {
+    setState(() {
+      _show = true;
+    });
+  }
+
+  void hideFloationButton() {
+    setState(() {
+      _show = false;
+    });
+  }
+
+  void handleScroll() async {
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        hideFloationButton();
+      }
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        showFloationButton();
+      }
+    });
   }
 
   @override
@@ -104,16 +140,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: _buildFeed(width),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SharePost(),
-              ));
-        },
+      floatingActionButton: Visibility(
+        visible: _show,
+        child: FloatingActionButton(
+          backgroundColor: Colors.green,
+          child: Icon(Icons.add),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SharePost(),
+                ));
+          },
+        ),
       ),
     );
   }
@@ -121,6 +160,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildFeed(width) {
     return Container(
       child: ListView.builder(
+          controller: _scrollController,
           itemCount: users.length,
           itemBuilder: (context, index) {
             return _buildFeedContent(index, width, context);
@@ -205,53 +245,15 @@ class _HomePageState extends State<HomePage> {
 
   Container _buildFeedActions(BuildContext context, int index) {
     return Container(
-        color: Colors.grey[300],
-        child: Row(
-          children: [
-            Expanded(
-                flex: 6,
-                child: GestureDetector(
-                    onTap: () {
-                      // Navigator.pushNamed(context, "/comments",
-
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Comments(
-                            firstName: users[index].firstName,
-                            lastName: users[index].lastName,
-                            date: users[index].date,
-                            post: users[index].post,
-                            media: users[index].media,
-                            url: users[index].url,
-                          ),
-                        ),
-                      );
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 16),
-                      child: Text("View Comments (5)",
-                          style: TextStyle(
-                              fontFamily: 'Trebuchet', fontSize: 16)),
-                    ))),
-            Expanded(
-                flex: 1,
-                child: IconButton(
-                    icon: Icon(
-                        isLiked
-                            ? Icons.thumb_up
-                            : Icons.thumb_up_alt_outlined,
-                        color: Colors.blue),
-                    onPressed: () {
-                      setState(() {
-                        isLiked = !isLiked;
-                      });
-                    })),
-            // child: widget(child: Icon(isLiked?Icons.thumb_up:Icons.thumb_up_alt_outlined, color: Colors.blue))),
-            Expanded(
-                flex: 1,
-                child: GestureDetector(
+      color: Colors.grey[300],
+      child: Row(
+        children: [
+          Expanded(
+              flex: 6,
+              child: GestureDetector(
                   onTap: () {
+                    // Navigator.pushNamed(context, "/comments",
+
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -266,13 +268,49 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   },
-                  child: ActionIcon(
-                    icon: Icons.comment,
-                    size: 24.0,
-                  ),
-                ))
-          ],
-        ),
-      );
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16),
+                    child: Text("View Comments (5)",
+                        style:
+                            TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
+                  ))),
+          Expanded(
+              flex: 1,
+              child: IconButton(
+                  icon: Icon(
+                      isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+                      color: Colors.blue),
+                  onPressed: () {
+                    setState(() {
+                      isLiked = !isLiked;
+                    });
+                  })),
+          // child: widget(child: Icon(isLiked?Icons.thumb_up:Icons.thumb_up_alt_outlined, color: Colors.blue))),
+          Expanded(
+              flex: 1,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Comments(
+                        firstName: users[index].firstName,
+                        lastName: users[index].lastName,
+                        date: users[index].date,
+                        post: users[index].post,
+                        media: users[index].media,
+                        url: users[index].url,
+                      ),
+                    ),
+                  );
+                },
+                child: ActionIcon(
+                  icon: Icons.comment,
+                  size: 24.0,
+                ),
+              ))
+        ],
+      ),
+    );
   }
 }

@@ -61,7 +61,7 @@ class _ReminderPageState extends State<ReminderPage> {
                         textLength = value.length;
                       });
                     },
-                    maxLength: null,
+                    maxLength: 160,
                     hintText: 'Type here...',
                     minLength: 7,
                   )

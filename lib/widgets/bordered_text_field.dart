@@ -17,6 +17,7 @@ class BorderedTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      cursorColor: Colors.black,
       textInputAction: TextInputAction.done,
       maxLines: null,
       minLines: minLength,
@@ -29,7 +30,7 @@ class BorderedTextField extends StatelessWidget {
             borderSide: BorderSide(color: Colors.blue),
           ),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.blue),
+            borderSide: BorderSide(color: Colors.grey),
           ),
           hintText: hintText,
           hintStyle: TextStyle(
