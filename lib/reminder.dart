@@ -3,6 +3,7 @@ import 'package:digital_notice_board/widgets/custom_dropdown.dart';
 import 'package:digital_notice_board/widgets/round_button.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'dart:developer' as dev;
 
 class ReminderPage extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class ReminderPage extends StatefulWidget {
 }
 
 class _ReminderPageState extends State<ReminderPage> {
+  static const String LOG_NAME = 'screen.reminder';
   var maxLength = 160;
   var textLength = 0;
 
@@ -25,6 +27,7 @@ class _ReminderPageState extends State<ReminderPage> {
 
   @override
   Widget build(BuildContext context) {
+    dev.log('In the reminder page', name: LOG_NAME);
     return Scaffold(
         appBar: AppBar(
             title: Text('Reminder',
@@ -126,11 +129,10 @@ class _ReminderPageState extends State<ReminderPage> {
                         ),
                         GestureDetector(
                             onTap: () {
-                              _selectDate(context);
+                              _selectTime();
                             },
-                            child: Text('${_time.hour}: ${_time.minute}',
-                                //child: Text(DateFormat.jm().format(currentDate),
-                                style: TextStyle(
+                         child: Text(_time.format(context),
+                                     style: TextStyle(
                                     fontSize: 16, fontFamily: 'Trebuchet')))
                       ],
                     ),

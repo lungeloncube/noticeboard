@@ -66,6 +66,7 @@ class _CommentReplyState extends State<CommentReply> {
 
   @override
   Widget build(BuildContext context) {
+    dev.log('In comment reply page', name: LOG_NAME);
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
@@ -79,7 +80,7 @@ class _CommentReplyState extends State<CommentReply> {
               child: Row(
                 children: [
                   Text(
-                      'Replies to ${widget.user.firstName}"s comment on this post.',
+                      "Replies to ${widget.user.firstName} ${widget.user.lastName}'s comment on this post.",
                       style: TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                 ],
               ),
@@ -96,7 +97,6 @@ class _CommentReplyState extends State<CommentReply> {
                   isLiked = !isLiked;
                 });
               },
-
             ),
             Padding(
               padding: const EdgeInsets.only(left: 40.0),
@@ -121,115 +121,120 @@ class _CommentReplyState extends State<CommentReply> {
           shrinkWrap: true,
           itemCount: users.length,
           itemBuilder: (context, index) {
-            return Column(
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          CircleAvatar(
-                              radius: 18,
-                              backgroundColor: Colors.grey,
-                              child:
-                                  Avatar(path: users[index].url, radius: 16.0)),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Column(
-                          children: [
-                            Container(
-                                padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
-                                color: Colors.grey[300],
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 9,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                  '${users[index].firstName + " " + users[index].lastName}',
-                                                  style: TextStyle(
-                                                      fontFamily: 'Trebuchet',
-                                                      fontSize: 14)),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 1,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.end,
-                                            children: [
-                                              ActionIconButton(
-                                                icon: Icons.more_vert,
-                                                onPressed: () {
-                                                  setState(() {
-                                                    isMore = !isMore;
-                                                  });
-                                                },
-                                                color: isMore
-                                                    ? Colors.blue
-                                                    : Colors.grey,
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Text('${users[index].post}' * 20),
-                                  ],
-                                )),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                ActionIconButton(
-                                  icon: isLiked
-                                      ? Icons.thumb_up
-                                      : Icons.thumb_up_alt_outlined,
-                                  color: Colors.blue,
-                                  onPressed: () {
-                                    setState(() {
-                                      isLiked = !isLiked;
-                                    });
-                                  },
-                                ),
-                                ActionIconButton(
-                                  icon: Icons.reply,
-                                  color: Colors.blue,
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CommentReply(
-                                          user: users[index],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            );
+            return feedWidget(index, context);
           }),
     );
+  }
+
+  Column feedWidget(int index, BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.grey,
+                      child: Avatar(path: users[index].url, radius: 16.0)),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Column(
+                  children: [
+                    _buildContent(index),
+                    _buildActions(context, index),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Row _buildActions(BuildContext context, int index) {
+    return
+      Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ActionIconButton(
+          icon: isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+          color: Colors.blue,
+          onPressed: () {
+            setState(() {
+              isLiked = !isLiked;
+            });
+          },
+        ),
+        ActionIconButton(
+          icon: Icons.reply,
+          color: Colors.blue,
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CommentReply(
+                  user: users[index],
+                ),
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Container _buildContent(int index) {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
+        color: Colors.grey[300],
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  flex: 9,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                          '${users[index].firstName + " " + users[index].lastName}',
+                          style:
+                              TextStyle(fontFamily: 'Trebuchet', fontSize: 14)),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ActionIconButton(
+                        icon: Icons.more_vert,
+                        onPressed: () {
+                          setState(() {
+                            isMore = !isMore;
+                          });
+                        },
+                        color: isMore ? Colors.blue : Colors.grey,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Text('${users[index].post}' * 20),
+          ],
+        ));
   }
 }
