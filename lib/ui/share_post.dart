@@ -6,6 +6,7 @@ import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
+import 'package:mime/mime.dart';
 import 'dart:developer' as dev;
 
 class SharePost extends StatefulWidget {
@@ -124,8 +125,13 @@ class _SharePostState extends State<SharePost> {
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
+
+
     setState(() {
       isCamera = true;
+      isGallery=false;
+      isVideo=false;
+
       if (pickedFile != null) {
         _image = File(pickedFile.path);
       } else {
@@ -137,8 +143,11 @@ class _SharePostState extends State<SharePost> {
   Future getGalleryMedia() async {
     final galleryFile = await picker.getImage(source: ImageSource.gallery);
 
+
     setState(() {
       isGallery = true;
+      isCamera=false;
+      isVideo=false;
       if (galleryFile != null) {
         _image = File(galleryFile.path);
       } else {
@@ -149,6 +158,8 @@ class _SharePostState extends State<SharePost> {
 
   Future _captureVideo() async {
     isVideo = true;
+    isCamera=false;
+    isGallery=false;
     PickedFile pickedFile = await picker.getVideo(source: ImageSource.camera);
     _video = File(pickedFile.path);
     _videoPlayerController = VideoPlayerController.file(_video)
@@ -161,7 +172,9 @@ class _SharePostState extends State<SharePost> {
 
   Widget uploadedMedia(isCamera, isVideo, isGallery) {
     if (isCamera) {
+      if(_image != null)
       return (Image.file(_image));
+      else {return Container();}
     }
     if (isVideo) {
       return _videoPlayerController.value.initialized
@@ -171,7 +184,9 @@ class _SharePostState extends State<SharePost> {
             )
           : Container();
     } else if (isGallery) {
-      return (Image.file(_image));
+      if(_image != null)
+        return (Image.file(_image));
+      else {return Container();}
     }
 
     return Container();

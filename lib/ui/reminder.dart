@@ -70,7 +70,7 @@ class _ReminderPageState extends State<ReminderPage> {
               SizedBox(height: 8),
               Container(
                 height: 40,
-                color: Colors.grey[300],
+                color: Colors.grey[200],
                 child: Row(
                   children: [
                     Padding(
@@ -160,7 +160,7 @@ class _ReminderPageState extends State<ReminderPage> {
                 children: [
                   RoundButton(
                     title: 'Cancel',
-                    color: Colors.grey[400],
+                    color: Colors.grey[00],
                     onPressed: () {
                       Navigator.pop(context);
                     },

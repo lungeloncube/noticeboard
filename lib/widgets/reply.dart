@@ -32,10 +32,9 @@ class Reply extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.grey,
-                    child:Avatar(path: url, radius: 20.0)
-                  ),
+                      radius: 22,
+                      backgroundColor: Colors.grey,
+                      child: Avatar(path: url, radius: 20.0)),
                 ],
               ),
             ),
@@ -47,7 +46,7 @@ class Reply extends StatelessWidget {
                   children: [
                     Container(
                         padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
-                        color: Colors.grey[300],
+                        color: Colors.grey[200],
                         child: Column(
                           children: [
                             Row(
@@ -56,10 +55,9 @@ class Reply extends StatelessWidget {
                                   flex: 9,
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                          '${firstName + " " +lastName}',
+                                      Text('${firstName + " " + lastName}',
                                           style: TextStyle(
                                               fontFamily: 'Trebuchet',
                                               fontSize: 18)),
@@ -69,8 +67,7 @@ class Reply extends StatelessWidget {
                                 Expanded(
                                   flex: 1,
                                   child: Column(
-                                    crossAxisAlignment:
-                                    CrossAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       IconButton(
                                           icon: Icon(Icons.more_vert),
@@ -80,7 +77,9 @@ class Reply extends StatelessWidget {
                                 )
                               ],
                             ),
-                            Text(post* 20,style:TextStyle(fontFamily: 'Trebuchet', fontSize:16)),
+                            Text(post * 20,
+                                style: TextStyle(
+                                    fontFamily: 'Trebuchet', fontSize: 16)),
                           ],
                         )),
                     Row(
@@ -95,9 +94,7 @@ class Reply extends StatelessWidget {
                             onPressed: onPressed),
                         IconButton(
                           icon: Icon(Icons.reply, color: Colors.blue),
-                          onPressed: () {
-
-                          },
+                          onPressed: () {},
                         ),
                       ],
                     ),

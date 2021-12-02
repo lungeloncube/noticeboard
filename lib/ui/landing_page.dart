@@ -1,5 +1,5 @@
-import 'package:digital_notice_board/comments.dart';
-import 'package:digital_notice_board/home.dart';
+
+import 'package:digital_notice_board/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 

@@ -1,5 +1,5 @@
-import 'package:digital_notice_board/comment_reply.dart';
-import 'package:digital_notice_board/users.dart';
+import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/ui/comment_reply.dart';
+import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
@@ -258,7 +258,7 @@ class _CommentsState extends State<Comments> {
                         children: [
                           Container(
                               padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
-                              color: Colors.grey[300],
+                              color: Colors.grey[200],
                               child: Column(
                                 children: [
                                   Row(

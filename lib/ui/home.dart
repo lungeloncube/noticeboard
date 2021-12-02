@@ -1,5 +1,9 @@
-import 'package:digital_notice_board/share_post.dart';
-import 'package:digital_notice_board/users.dart';
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_event.dart';
+import 'package:digital_notice_board/data/models/all_posts_model.dart';
+import 'package:digital_notice_board/ui/comments.dart';
+import 'package:digital_notice_board/ui/share_post.dart';
+import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/Icon.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
@@ -7,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:developer' as dev;
 
-import 'comments.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   bool isMore = false;
   bool isSearch = false;
   TextEditingController _textController = TextEditingController();
+  AllPostsBloc allPostsBloc;
+  List<AllPostsModel> allPostModel;
 
   List<User> users = [
     User(
@@ -74,6 +80,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
 
+    allPostsBloc = BlocProvider.of<AllPostsBloc>(context);
+    allPostsBloc.add(FetchAllPostsEvents());
+    print("event triggered");
     handleScroll();
   }
 
@@ -115,6 +124,7 @@ class _HomePageState extends State<HomePage> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        leading: null,
         title: isSearch
             ? SearchTextField(textController: _textController)
             : Text('Notice Board',
