@@ -1,7 +1,10 @@
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
+import 'package:digital_notice_board/blocs/like_post_bloc/like_post_bloc.dart';
+import 'package:digital_notice_board/data/repositories/like_post_repository/like_post_repository.dart';
 import 'package:digital_notice_board/data/repositories/post_repository/post_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 class AppBlocs extends StatelessWidget {
   final Widget app;
 
@@ -11,13 +14,18 @@ class AppBlocs extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-
         BlocProvider(
           create: (context) => AllPostsBloc(
-            allPostsRepository:RepositoryProvider.of<AllPostsRepository>(context),
+            allPostsRepository:
+                RepositoryProvider.of<AllPostsRepository>(context),
           ),
         ),
-
+        BlocProvider(
+          create: (context) => LikePostBloc(
+            likePostRepository:
+                RepositoryProvider.of<LikePostRepository>(context),
+          ),
+        ),
       ],
       child: app,
     );

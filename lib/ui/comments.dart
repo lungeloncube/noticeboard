@@ -1,5 +1,6 @@
-import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/ui/comment_reply.dart';
-import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/ui/users.dart';
+import 'package:digital_notice_board/data/models/posts_response.dart';
+import 'package:digital_notice_board/ui/comment_reply.dart';
+import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
@@ -7,13 +8,16 @@ import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
 
+import 'package:intl/intl.dart';
+
 class Comments extends StatefulWidget {
   final String firstName;
   final String lastName;
-  final String date;
+  final DateTime date;
   final String url;
   final String post;
   final String media;
+  final List<Comment> comments;
 
   const Comments(
       {Key key,
@@ -22,7 +26,8 @@ class Comments extends StatefulWidget {
       @required this.date,
       @required this.url,
       @required this.post,
-      @required this.media})
+      @required this.media,
+      @required this.comments})
       : super(key: key);
 
   @override
@@ -98,8 +103,6 @@ class _CommentsState extends State<Comments> {
                   color: Colors.white,
                   fontFamily: 'Trebuchet',
                 )),
-        // title: Text("Comments",
-        //     style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22)),
         actions: [
           GestureDetector(
               onTap: () {
@@ -127,14 +130,10 @@ class _CommentsState extends State<Comments> {
                           backgroundColor: Colors.grey,
                           child: Avatar(
                             radius: 20.0,
-                            path: widget.url ?? 'assets/avatar.png',
-                          )
-
-                          // CircleAvatar(
-                          //   radius: 20,
-                          //   backgroundImage: AssetImage(widget.url??'assets/avatar.png'),
-                          // ),
-                          ),
+                            path: widget.url == ''
+                                ? 'assets/avatar.png'
+                                : widget.url,
+                          )),
                     ],
                   ),
                   SizedBox(width: 10),
@@ -145,7 +144,13 @@ class _CommentsState extends State<Comments> {
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 18)),
                       SizedBox(height: 5),
-                      Text(widget.date,
+                      Text(
+                          (DateFormat.MMMEd().format(widget.date) +
+                              ' ' +
+                              (DateFormat.jm()
+                                  .format(widget.date)
+                                  .toLowerCase())),
+                          //widget.date,
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16))
                     ],
@@ -173,7 +178,10 @@ class _CommentsState extends State<Comments> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  Text('${widget.post}' * 30),
+                  Text(
+                    '${widget.post}',
+                    style: TextStyle(fontSize: 16, fontFamily: 'Trebuchet'),
+                  ),
                   SizedBox(height: 16),
                   Container(
                       width: width,
@@ -206,148 +214,150 @@ class _CommentsState extends State<Comments> {
                 ],
               ),
             ),
-            users.length == 0 ? Container() : _buildFeed(width)
+            users.length == 0 ? Container() : _buildFeed(width, widget.comments)
           ],
         ),
       ),
       bottomSheet: Container(
-          color: Colors.grey[300],
+          color: Colors.grey[200],
           child: BorderlessInputField(
+            
             hint: 'Comment',
             maxLines: null,
           )),
     );
   }
 
-  Widget _buildFeed(width) {
+  Widget _buildFeed(width, List<Comment> comments) {
     return Container(
       child: ListView.builder(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
-          itemCount: users.length,
+          itemCount: comments.length,
           itemBuilder: (context, index) {
-            return _buildFeedContent(index, context);
+            return _buildFeedContent(index, context, comments);
           }),
     );
   }
 
-  Column _buildFeedContent(int index, BuildContext context) {
+  Column _buildFeedContent(
+      int index, BuildContext context, List<Comment> comments) {
     return Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        CircleAvatar(
-                            radius: 22,
-                            backgroundColor: Colors.grey,
-                            child:
-                                Avatar(path: users[index].url, radius: 20.0)),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Column(
-                        children: [
-                          Container(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
-                              color: Colors.grey[200],
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 9,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                                '${users[index].firstName + " " + users[index].lastName}',
-                                                style: TextStyle(
-                                                    fontFamily: 'Trebuchet',
-                                                    fontSize: 18)),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          children: [
-                                            IconButton(
-                                                icon: Icon(Icons.more_vert,
-                                                    color: isMore
-                                                        ? Colors.blue
-                                                        : Colors.grey),
-                                                onPressed: () {
-                                                  setState(() {
-                                                    isMore = !isMore;
-                                                  });
-                                                }),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  Text('${users[index].post}' * 20,
-                                      style: TextStyle(
-                                          fontFamily: 'Trebuchet',
-                                          fontSize: 16)),
-                                ],
-                              )),
-                          _buildCommentActions(context, index),
-                        ],
-                      ),
-                    ),
-                  ),
+                  CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.grey,
+                      child: Avatar(
+                          path: comments[index].users.thumbnailUrl == ''
+                              ? 'assets/avatar.png'
+                              : comments[index].users.thumbnailUrl,
+                          radius: 20.0)),
                 ],
               ),
-            ],
-          );
+            ),
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Column(
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.fromLTRB(8, 0, 0, 8),
+                        color: Colors.grey[100],
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  flex: 9,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          '${comments[index].users.firstName + " " + comments[index].users.lastName}',
+                                          style: TextStyle(
+                                              fontFamily: 'Trebuchet',
+                                              fontSize: 18)),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                          icon: Icon(Icons.more_vert,
+                                              color: isMore
+                                                  ? Colors.blue
+                                                  : Colors.grey),
+                                          onPressed: () {
+                                            setState(() {
+                                              isMore = !isMore;
+                                            });
+                                          }),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
+                            Text('${comments[index].commentText}',
+                                style: TextStyle(
+                                    fontFamily: 'Trebuchet', fontSize: 16)),
+                          ],
+                        )),
+                    _buildCommentActions(context, index),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   Row _buildCommentActions(BuildContext context, int index) {
     return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ActionIconButton(
-                              icon: isLiked
-                                  ? Icons.thumb_up
-                                  : Icons.thumb_up_alt_outlined,
-                              color: Colors.blue,
-                              onPressed: () {
-                                setState(() {
-                                  isLiked = !isLiked;
-                                });
-                              },
-                            ),
-                            ActionIconButton(
-                              icon: Icons.reply,
-                              color: Colors.blue,
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CommentReply(
-                                      user: users[index],
-                                    ),
-                                  ),
-                                );
-                                setState(() {
-                                  isCommentReply = true;
-                                });
-                              },
-                            )
-                          ],
-                        );
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        ActionIconButton(
+          icon: isLiked ? Icons.thumb_up : Icons.thumb_up_alt_outlined,
+          color: Colors.blue,
+          onPressed: () {
+            setState(() {
+              isLiked = !isLiked;
+            });
+          },
+        ),
+        ActionIconButton(
+          icon: Icons.reply,
+          color: Colors.blue,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CommentReply(
+                  user: users[index],
+                  //user: users[index],
+                ),
+              ),
+            );
+            setState(() {
+              isCommentReply = true;
+            });
+          },
+        )
+      ],
+    );
   }
 }

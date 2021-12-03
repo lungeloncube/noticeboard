@@ -1,4 +1,4 @@
-import 'package:digital_notice_board/data/models/all_posts_model.dart';
+import 'package:digital_notice_board/data/models/posts_response.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -13,11 +13,11 @@ class AllPostsInitial extends AllPostsState {}
 class AllPostsLoadingState extends AllPostsState {}
 
 class AllPostsLoadedState extends AllPostsState {
-  final List<AllPostsModel> allPostsModel;
+  final PostsResponse postsResponse;
 
-  AllPostsLoadedState({@required this.allPostsModel});
+  AllPostsLoadedState({@required this.postsResponse});
   @override
-  List<Object> get props => [allPostsModel];
+  List<Object> get props => [postsResponse];
 }
 
 class AllPostsErrorState extends AllPostsState {

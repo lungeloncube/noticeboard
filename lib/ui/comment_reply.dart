@@ -1,7 +1,7 @@
-import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/widgets/reply.dart';
-import 'file:///C:/Users/Dell%206/Documents/GitHub/digital_notice_board/lib/ui/users.dart';
+import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
+import 'package:digital_notice_board/widgets/reply.dart';
 import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
@@ -163,8 +163,7 @@ class _CommentReplyState extends State<CommentReply> {
   }
 
   Row _buildActions(BuildContext context, int index) {
-    return
-      Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ActionIconButton(
