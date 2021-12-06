@@ -1,3 +1,5 @@
+import 'package:digital_notice_board/blocs/reply_comment_bloc/reply_comment_bloc.dart';
+import 'package:digital_notice_board/blocs/reply_comment_bloc/reply_comment_event.dart';
 import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
@@ -5,6 +7,8 @@ import 'package:digital_notice_board/widgets/reply.dart';
 import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CommentReply extends StatefulWidget {
   final User user;
@@ -18,6 +22,7 @@ class CommentReply extends StatefulWidget {
 class _CommentReplyState extends State<CommentReply> {
   bool isMore = false;
   bool isLiked = false;
+  TextEditingController commentController = TextEditingController();
   List<User> users = [
     User(
         firstName: "Lungelo",
@@ -63,6 +68,15 @@ class _CommentReplyState extends State<CommentReply> {
         media: "assets/post_image.jpg")
   ];
   static const String LOG_NAME = 'screen.commentReply';
+  ReplyCommentBloc replyCommentBloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    replyCommentBloc = BlocProvider.of<ReplyCommentBloc>(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +124,9 @@ class _CommentReplyState extends State<CommentReply> {
           child: BorderlessInputField(
             hint: 'Comment',
             maxLines: null,
+            onSaved: (text) {
+              replyCommentBloc.add(AddCommentReplyEvent(branchId: 'BR-1001', comment: commentController.text ,commentId: '', userId: ''));
+            },
           )),
     );
   }

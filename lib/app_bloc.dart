@@ -1,5 +1,9 @@
+import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_bloc.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
 import 'package:digital_notice_board/blocs/like_post_bloc/like_post_bloc.dart';
+import 'package:digital_notice_board/blocs/reply_comment_bloc/reply_comment_bloc.dart';
+import 'package:digital_notice_board/data/repositories/add_comment_repository/add_comment_repository.dart';
+import 'package:digital_notice_board/data/repositories/comment_reply_repository/comment_reply_repository.dart';
 import 'package:digital_notice_board/data/repositories/like_post_repository/like_post_repository.dart';
 import 'package:digital_notice_board/data/repositories/post_repository/post_repository.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +28,18 @@ class AppBlocs extends StatelessWidget {
           create: (context) => LikePostBloc(
             likePostRepository:
                 RepositoryProvider.of<LikePostRepository>(context),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => CommentBloc(
+            addCommentRepository:
+                RepositoryProvider.of<AddCommentRepository>(context),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ReplyCommentBloc(
+            replyCommentRepository:
+                RepositoryProvider.of<ReplyCommentRepository>(context),
           ),
         ),
       ],

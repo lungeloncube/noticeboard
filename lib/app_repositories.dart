@@ -1,3 +1,7 @@
+import 'package:digital_notice_board/data/repositories/add_comment_repository/add_comment_provider.dart';
+import 'package:digital_notice_board/data/repositories/add_comment_repository/add_comment_repository.dart';
+import 'package:digital_notice_board/data/repositories/comment_reply_repository/comment_reply_provider.dart';
+import 'package:digital_notice_board/data/repositories/comment_reply_repository/comment_reply_repository.dart';
 import 'package:digital_notice_board/data/repositories/like_post_repository/like_post_provider.dart';
 import 'package:digital_notice_board/data/repositories/like_post_repository/like_post_repository.dart';
 import 'package:digital_notice_board/data/repositories/post_repository/post_provider.dart';
@@ -23,6 +27,12 @@ class AppRepositories extends StatelessWidget {
         RepositoryProvider(
             create: (context) => LikePostRepository(
                 likePostProvider: LikePostProvider(client: Client()))),
+        RepositoryProvider(
+            create: (context) => AddCommentRepository(
+                addCommentProvider: AddCommentProvider(client: Client()))),
+        RepositoryProvider(
+            create: (context) => ReplyCommentRepository(
+                commentReplyProvider: CommentReplyProvider(client: Client()))),
       ],
       child: appBloc,
     );

@@ -1,11 +1,16 @@
+import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_bloc.dart';
+import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_event.dart';
+import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_state.dart';
 import 'package:digital_notice_board/data/models/posts_response.dart';
 import 'package:digital_notice_board/ui/comment_reply.dart';
 import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
+import 'package:digital_notice_board/widgets/loading_indicator.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
 import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as dev;
 
 import 'package:intl/intl.dart';
@@ -18,6 +23,8 @@ class Comments extends StatefulWidget {
   final String post;
   final String media;
   final List<Comment> comments;
+  final postUserId;
+  final postId;
 
   const Comments(
       {Key key,
@@ -27,7 +34,9 @@ class Comments extends StatefulWidget {
       @required this.url,
       @required this.post,
       @required this.media,
-      @required this.comments})
+      @required this.postUserId,
+      @required this.postId,
+      this.comments})
       : super(key: key);
 
   @override
@@ -41,6 +50,9 @@ class _CommentsState extends State<Comments> {
   bool isMore = false;
   bool isSearch = false;
   TextEditingController _textController = TextEditingController();
+  TextEditingController commentController = TextEditingController();
+  CommentBloc commentBloc;
+  bool commented;
 
   static const String LOG_NAME = 'screen.comments';
 
@@ -88,6 +100,17 @@ class _CommentsState extends State<Comments> {
         post: "lorem ipsum ",
         media: "assets/post_image.jpg")
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    commentBloc = BlocProvider.of<CommentBloc>(context);
+    // commentBloc.add(AddCommentEvent(
+    //     branchId: 'BR-1001',
+    //     comment: commentController.text,
+    //     userId: widget.postUserId.toString(),
+    //     postId: widget.postId));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -214,16 +237,51 @@ class _CommentsState extends State<Comments> {
                 ],
               ),
             ),
-            users.length == 0 ? Container() : _buildFeed(width, widget.comments)
+            BlocListener<CommentBloc, CommentState>(
+              listener: (context, state) {
+                if (state is CommentLoadedState) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(state.commented
+                          ? 'Comment added'
+                          : 'Comment was not added')));
+                }
+              },
+              child: BlocBuilder<CommentBloc, CommentState>(
+                builder: (context, state) {
+                  if (state is CommentInitial) {
+                    return LoadingIndicator();
+                  } else if (state is CommentLoadingState) {
+                    return LoadingIndicator();
+                  } else if (state is CommentLoadedState) {
+                    return users.length == 0
+                        ? Container()
+                        : _buildFeed(width, widget.comments);
+                  } else if (state is CommentErrorState) {
+                    return Text("Error occurred");
+                  }
+                  return users.length == 0
+                      ? Container()
+                      : _buildFeed(width, widget.comments);
+                },
+              ),
+            ),
+            SizedBox(height: 50)
           ],
         ),
       ),
       bottomSheet: Container(
           color: Colors.grey[200],
           child: BorderlessInputField(
-            
+            controller: commentController,
             hint: 'Comment',
             maxLines: null,
+            onSaved: (text) {
+              commentBloc.add(AddCommentEvent(
+                  branchId: 'BR-1001',
+                  comment: commentController.text,
+                  userId: widget.postUserId.toString(),
+                  postId: widget.postId));
+            },
           )),
     );
   }
@@ -322,6 +380,7 @@ class _CommentsState extends State<Comments> {
             ),
           ],
         ),
+        // SizedBox(height: 50),
       ],
     );
   }
@@ -356,7 +415,7 @@ class _CommentsState extends State<Comments> {
               isCommentReply = true;
             });
           },
-        )
+        ),
       ],
     );
   }

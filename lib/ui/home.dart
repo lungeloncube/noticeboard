@@ -25,12 +25,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // VideoPlayerController _controller;
   ScrollController _scrollController =
       new ScrollController(); // set controller on scrolling
   bool _show = true;
   static const String LOG_NAME = 'screen.home';
 
+  //bool isLiked = false;
   bool isLiked = false;
+  bool isDisliked = false;
   bool isVisible = false;
   bool isMore = false;
   bool isSearch = false;
@@ -39,50 +42,6 @@ class _HomePageState extends State<HomePage> {
   LikePostBloc likePostBloc;
   PostsResponse postsResponse;
 
-  List<User> users = [
-    User(
-        firstName: "Lungelo",
-        lastName: "Ncube",
-        url: "assets/one.jpg",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Amanda",
-        lastName: "Ncube",
-        url: "assets/two.jpg",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Yolanda",
-        lastName: "Ndlovu",
-        url: "assets/three.jpg",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Lethu",
-        lastName: "Timm",
-        url: "assets/four.jpg",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Anele",
-        lastName: "Moyo",
-        url: "assets/five.png",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Aisha",
-        lastName: "Ncube",
-        url: "assets/six.png",
-        date: "Mon July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg")
-  ];
   @override
   void initState() {
     super.initState();
@@ -91,7 +50,7 @@ class _HomePageState extends State<HomePage> {
     allPostsBloc.add(FetchAllPostsEvents());
 
     likePostBloc = BlocProvider.of<LikePostBloc>(context);
-    print("event triggered");
+
     handleScroll();
   }
 
@@ -133,7 +92,6 @@ class _HomePageState extends State<HomePage> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        leading: null,
         title: isSearch
             ? SearchTextField(textController: _textController)
             : Text('Notice Board',
@@ -242,6 +200,12 @@ class _HomePageState extends State<HomePage> {
           controller: _scrollController,
           itemCount: postsResponse.posts.length,
           itemBuilder: (context, index) {
+            // _controller = VideoPlayerController.network(
+            //     postsResponse.posts[index].mediaFiles[index].url)
+            //   ..initialize().then((_) {
+            //     setState(() {}); //when your thumbnail will show.
+            //   });
+
             return Column(
               children: [
                 Padding(
@@ -319,9 +283,15 @@ class _HomePageState extends State<HomePage> {
                       Container(
                           width: width,
                           child: Image.asset(
-                            users[index].media,
+                            "assets/post_image.jpg",
                             fit: BoxFit.fill,
                           )),
+
+                      // Container(
+                      //   width: 100.0,
+                      //   height: 56.0,
+                      //   child: VideoPlayer(_controller),
+                      // ),
                       SizedBox(height: 15),
                     ],
                   ),
@@ -366,9 +336,11 @@ class _HomePageState extends State<HomePage> {
                           lastName: response.posts[index].users.lastName,
                           date: response.posts[index].createdAt,
                           post: response.posts[index].postText,
-                          media: users[index].media,
+                          media: "assets/post_image.jpg",
                           url: response.posts[index].users.thumbnailUrl,
                           comments: response.posts[index].comments,
+                          postId: response.posts[index].postId,
+                          postUserId: response.posts[index].users.userId,
                         ),
                       ),
                     );
@@ -395,13 +367,8 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.blue),
                           onPressed: () {
                             setState(() {
-                              isLiked = state.liked;
+                              isLiked = !isLiked;
                             });
-
-                            isLiked
-                                ? likePostBloc.add(
-                                    LikeEvent(userId: userId, postId: postId))
-                                : null;
                           }),
                       Text(
                         response.posts[index].likes.toString(),
@@ -413,6 +380,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   );
                 }
+
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -430,7 +398,8 @@ class _HomePageState extends State<HomePage> {
                           isLiked
                               ? likePostBloc.add(
                                   LikeEvent(userId: userId, postId: postId))
-                              : null;
+                              : likePostBloc.add(
+                                  UnLikeEvent(userId: userId, postId: postId));
                         }),
                     Text(
                       response.posts[index].likes.toString(),
@@ -456,9 +425,11 @@ class _HomePageState extends State<HomePage> {
                         lastName: response.posts[index].users.lastName,
                         date: response.posts[index].createdAt,
                         post: response.posts[index].postText,
-                        media: users[index].media,
+                        media: "assets/post_image.jpg",
                         url: response.posts[index].users.thumbnailUrl,
                         comments: response.posts[index].comments,
+                        postId: response.posts[index].postId,
+                        postUserId: response.posts[index].users.userId,
                       ),
                     ),
                   );

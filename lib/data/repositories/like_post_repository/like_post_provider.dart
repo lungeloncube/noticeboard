@@ -25,4 +25,21 @@ class LikePostProvider {
     }
     throw Exception('An error occurred. Try again later.');
   }
+
+  Future unLikePost(String postId, String userId) async {
+    var headers = await GeneralFunctions.getHeaders();
+    var url = '${Url.unLikeUrl}user/$userId/post/$postId';
+
+    print("......" + url);
+
+    var response = await client.delete(Uri.parse(url), headers: headers);
+    if (response.statusCode == 204) {
+      if (response.body.contains("")) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    throw Exception('An error occurred. Try again later.');
+  }
 }

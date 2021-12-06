@@ -21,7 +21,7 @@ class AllPostsBloc extends Bloc<AllPostsEvent, AllPostsState> {
     }
 
     try {
-      postResponse = await allPostsRepository.getAllPosts();
+     var postResponse = await allPostsRepository.getAllPosts();
       print(postResponse);
       yield AllPostsLoadedState(postsResponse: postResponse);
     } catch (e) {

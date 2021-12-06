@@ -5,19 +5,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' show Client;
 
 class AllPostsProvider {
-    final Client client;
+  final Client client;
 
-  AllPostsProvider(
-      {@required this.client});
+  AllPostsProvider({@required this.client});
 
   Future getAllPosts() async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.allPosts}';
 
     var response = await client.get(Uri.parse(url), headers: headers);
+    print(response.body);
+
+    var jsonResponse = response.body;
     if (response.statusCode == 200) {
       if (response.body.isNotEmpty) {
-        return json.decode(response.body);
+        return json.decode(jsonResponse);
       } else {
         print("nothing in the post body");
       }

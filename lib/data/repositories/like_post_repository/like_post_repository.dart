@@ -18,4 +18,15 @@ class LikePostRepository {
 
     return responseData;
   }
+
+  Future<bool> unLikePost(
+      {@required String postId, @required String userId}) async {
+    var responseData = await likePostProvider.likePost(postId, userId);
+
+    if (responseData == null) {
+      return null;
+    }
+
+    return responseData;
+  }
 }

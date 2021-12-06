@@ -20,6 +20,14 @@ class LikePostLoadedState extends LikePostState {
   List<Object> get props => [liked];
 }
 
+class UnLikePostLoadedState extends LikePostState {
+  final bool disLiked;
+
+  UnLikePostLoadedState({@required this.disLiked});
+  @override
+  List<Object> get props => [disLiked];
+}
+
 class LikePostErrorState extends LikePostState {
   final bool response;
 
