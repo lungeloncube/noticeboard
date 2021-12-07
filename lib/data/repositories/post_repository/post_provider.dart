@@ -26,4 +26,23 @@ class AllPostsProvider {
     }
     throw Exception('An error occurred. Try again later.');
   }
+
+  Future getPostById(
+      {@required String branchId, @required String postId}) async {
+    var headers = await GeneralFunctions.getHeaders();
+    var url = '${Url.postByIdUrl}/post/$postId/branch/$branchId';
+
+    var response = await client.get(Uri.parse(url), headers: headers);
+    print(response.body);
+
+    var jsonResponse = response.body;
+    if (response.statusCode == 200) {
+      if (response.body.isNotEmpty) {
+        return json.decode(jsonResponse);
+      } else {
+        print("nothing in the post body");
+      }
+    }
+    throw Exception('An error occurred. Try again later.');
+  }
 }

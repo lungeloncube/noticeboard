@@ -7,17 +7,18 @@ import 'package:digital_notice_board/blocs/like_post_bloc/like_post_state.dart';
 import 'package:digital_notice_board/data/models/posts_response.dart';
 import 'package:digital_notice_board/ui/comments.dart';
 import 'package:digital_notice_board/ui/share_post.dart';
-import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/Icon.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/loading_indicator.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import 'dart:developer' as dev;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,15 +26,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // VideoPlayerController _controller;
+  VideoPlayerController _controller;
+  Future<void> _initializeVideoPlayerFuture;
   ScrollController _scrollController =
       new ScrollController(); // set controller on scrolling
   bool _show = true;
   static const String LOG_NAME = 'screen.home';
 
   //bool isLiked = false;
-  bool isLiked = false;
-  bool isDisliked = false;
+
   bool isVisible = false;
   bool isMore = false;
   bool isSearch = false;
@@ -200,12 +201,6 @@ class _HomePageState extends State<HomePage> {
           controller: _scrollController,
           itemCount: postsResponse.posts.length,
           itemBuilder: (context, index) {
-            // _controller = VideoPlayerController.network(
-            //     postsResponse.posts[index].mediaFiles[index].url)
-            //   ..initialize().then((_) {
-            //     setState(() {}); //when your thumbnail will show.
-            //   });
-
             return Column(
               children: [
                 Padding(
@@ -280,18 +275,28 @@ class _HomePageState extends State<HomePage> {
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                       SizedBox(height: 15),
-                      Container(
-                          width: width,
-                          child: Image.asset(
-                            "assets/post_image.jpg",
-                            fit: BoxFit.fill,
-                          )),
+                      // Container(
+                      //     width: width,
+                      //     child: Image.asset(
+                      //       "assets/post_image.jpg",
+                      //       fit: BoxFit.fill,
+                      //     )),
 
                       // Container(
                       //   width: 100.0,
                       //   height: 56.0,
                       //   child: VideoPlayer(_controller),
                       // ),
+
+                      // AspectRatio(
+                      //   aspectRatio: _controller.value.aspectRatio,
+                      //   child: VideoPlayer(_controller),
+                      // ),
+
+                      IconButton(
+                          icon: Icon(Icons.play_circle_fill_rounded),
+                          onPressed: () {}),
+
                       SizedBox(height: 15),
                     ],
                   ),
@@ -302,7 +307,7 @@ class _HomePageState extends State<HomePage> {
                     postsResponse.posts[index].comments,
                     postsResponse.posts[index].postId,
                     postsResponse.posts[index].users.userId.toString(),
-                    isLiked,
+                    false,
                     postsResponse),
               ],
             );
@@ -316,7 +321,7 @@ class _HomePageState extends State<HomePage> {
       List<Comment> comments,
       String postId,
       String userId,
-      bool isLiked,
+      isLiked,
       PostsResponse response) {
     return Container(
       color: Colors.grey[200],
@@ -326,8 +331,6 @@ class _HomePageState extends State<HomePage> {
               flex: 6,
               child: GestureDetector(
                   onTap: () {
-                    // Navigator.pushNamed(context, "/comments",
-
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -338,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                           post: response.posts[index].postText,
                           media: "assets/post_image.jpg",
                           url: response.posts[index].users.thumbnailUrl,
-                          comments: response.posts[index].comments,
+                          // comment: response.posts[index].comments,
                           postId: response.posts[index].postId,
                           postUserId: response.posts[index].users.userId,
                         ),
@@ -352,67 +355,36 @@ class _HomePageState extends State<HomePage> {
                             TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                   ))),
           Expanded(
-            flex: 2,
-            child: BlocBuilder<LikePostBloc, LikePostState>(
-              builder: (context, state) {
-                if (state is LikePostLoadedState) {
+              flex: 2,
+              child: BlocBuilder<LikePostBloc, LikePostState>(
+                builder: (context, state) {
                   return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       IconButton(
                           icon: Icon(
-                              state.liked
+                              likePostBloc.isLiked
                                   ? Icons.thumb_up
                                   : Icons.thumb_up_alt_outlined,
                               color: Colors.blue),
                           onPressed: () {
-                            setState(() {
-                              isLiked = !isLiked;
-                            });
+                            if (likePostBloc.isLiked) {
+                              likePostBloc.add(
+                                  UnLikeEvent(userId: userId, postId: postId));
+                            } else {
+                              likePostBloc.add(
+                                  LikeEvent(userId: userId, postId: postId));
+                            }
                           }),
-                      Text(
-                        response.posts[index].likes.toString(),
-                        style: TextStyle(
+                      Text(" ${response.posts[index].likes}",
+                          style: TextStyle(
+                            fontFamily: 'Trebuchet',
                             color: Colors.blue,
                             fontSize: 12,
-                            fontFamily: 'Trebuchet'),
-                      )
+                          )),
                     ],
                   );
-                }
-
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                        icon: Icon(
-                            isLiked
-                                ? Icons.thumb_up
-                                : Icons.thumb_up_alt_outlined,
-                            color: Colors.blue),
-                        onPressed: () {
-                          setState(() {
-                            isLiked = !isLiked;
-                          });
-
-                          isLiked
-                              ? likePostBloc.add(
-                                  LikeEvent(userId: userId, postId: postId))
-                              : likePostBloc.add(
-                                  UnLikeEvent(userId: userId, postId: postId));
-                        }),
-                    Text(
-                      response.posts[index].likes.toString(),
-                      style: TextStyle(
-                          color: Colors.blue,
-                          fontSize: 12,
-                          fontFamily: 'Trebuchet'),
-                    )
-                  ],
-                );
-              },
-            ),
-          ),
+                },
+              )),
           Expanded(
               flex: 2,
               child: GestureDetector(
@@ -427,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                         post: response.posts[index].postText,
                         media: "assets/post_image.jpg",
                         url: response.posts[index].users.thumbnailUrl,
-                        comments: response.posts[index].comments,
+                        //  comment: response.posts[index].comments,
                         postId: response.posts[index].postId,
                         postUserId: response.posts[index].users.userId,
                       ),

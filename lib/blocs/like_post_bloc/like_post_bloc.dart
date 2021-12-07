@@ -8,7 +8,7 @@ import 'dart:developer' as dev;
 class LikePostBloc extends Bloc<LikePostEvent, LikePostState> {
   static const LOG_NAME = 'bloc.like_posts';
   final LikePostRepository likePostRepository;
-  bool response;
+  bool isLiked = false;
 
   LikePostBloc({LikePostState initialState, @required this.likePostRepository})
       : super(initialState);
@@ -21,10 +21,10 @@ class LikePostBloc extends Bloc<LikePostEvent, LikePostState> {
 
       try {
         final userId = event.userId.replaceAll('.0', '');
-        response = await likePostRepository.likePost(
+        isLiked = await likePostRepository.likePost(
             postId: event.postId, userId: userId);
-        print(response);
-        yield LikePostLoadedState(liked: response);
+        print(isLiked);
+        yield LikePostLoadedState(liked: isLiked);
       } catch (e) {
         yield LikePostErrorState(response: false);
       }
@@ -35,10 +35,10 @@ class LikePostBloc extends Bloc<LikePostEvent, LikePostState> {
 
       try {
         final userId = event.userId.replaceAll('.0', '');
-        response = await likePostRepository.unLikePost(
+        isLiked = !await likePostRepository.unLikePost(
             postId: event.postId, userId: userId);
-        print(response);
-        yield UnLikePostLoadedState(disLiked: response);
+        print(isLiked);
+        yield UnLikePostLoadedState(disLiked: isLiked);
       } catch (e) {
         dev.log('Error in fetcing posts: $e', name: LOG_NAME);
         yield LikePostErrorState(response: false);

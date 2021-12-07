@@ -33,6 +33,9 @@ class AppRepositories extends StatelessWidget {
         RepositoryProvider(
             create: (context) => ReplyCommentRepository(
                 commentReplyProvider: CommentReplyProvider(client: Client()))),
+                RepositoryProvider(
+            create: (context) => ReplyCommentRepository(
+                commentReplyProvider: CommentReplyProvider(client: Client()))),
       ],
       child: appBloc,
     );

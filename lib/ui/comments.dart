@@ -1,7 +1,10 @@
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_bloc.dart';
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_event.dart';
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_state.dart';
-import 'package:digital_notice_board/data/models/posts_response.dart';
+import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_bloc.dart';
+import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_event.dart';
+import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_state.dart';
+import 'package:digital_notice_board/data/models/individual_post_response.dart';
 import 'package:digital_notice_board/ui/comment_reply.dart';
 import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
@@ -14,6 +17,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as dev;
 
 import 'package:intl/intl.dart';
+import 'package:video_player/video_player.dart';
 
 class Comments extends StatefulWidget {
   final String firstName;
@@ -22,22 +26,22 @@ class Comments extends StatefulWidget {
   final String url;
   final String post;
   final String media;
-  final List<Comment> comments;
+  //final List<Comment> comment;
   final postUserId;
   final postId;
 
-  const Comments(
-      {Key key,
-      @required this.firstName,
-      @required this.lastName,
-      @required this.date,
-      @required this.url,
-      @required this.post,
-      @required this.media,
-      @required this.postUserId,
-      @required this.postId,
-      this.comments})
-      : super(key: key);
+  const Comments({
+    Key key,
+    @required this.firstName,
+    @required this.lastName,
+    @required this.date,
+    @required this.url,
+    @required this.post,
+    @required this.media,
+    @required this.postUserId,
+    @required this.postId,
+    //this.comment
+  }) : super(key: key);
 
   @override
   _CommentsState createState() => _CommentsState();
@@ -53,6 +57,10 @@ class _CommentsState extends State<Comments> {
   TextEditingController commentController = TextEditingController();
   CommentBloc commentBloc;
   bool commented;
+  VideoPlayerController _controller;
+  Future<void> _initializeVideoPlayerFuture;
+  IndividualPostBloc individualPostBloc;
+  IndividualPostResponse response;
 
   static const String LOG_NAME = 'screen.comments';
 
@@ -105,11 +113,19 @@ class _CommentsState extends State<Comments> {
   void initState() {
     super.initState();
     commentBloc = BlocProvider.of<CommentBloc>(context);
-    // commentBloc.add(AddCommentEvent(
-    //     branchId: 'BR-1001',
-    //     comment: commentController.text,
-    //     userId: widget.postUserId.toString(),
-    //     postId: widget.postId));
+    individualPostBloc = BlocProvider.of<IndividualPostBloc>(context);
+
+    individualPostBloc
+        .add(FetchPostByIdEvents(postId: widget.postId, branchId: 'BR-1001'));
+    _controller = VideoPlayerController.network(
+      'https://drive.google.com/file/d/1IuZiDivt_TpolvV77I0D2LTDHIuMml8u/viewk',
+    );
+
+    // Initialize the controller and store the Future for later use.
+    _initializeVideoPlayerFuture = _controller.initialize();
+
+    // Use the controller to loop the video.
+    _controller.setLooping(true);
   }
 
   @override
@@ -137,6 +153,25 @@ class _CommentsState extends State<Comments> {
                   color: Colors.black)),
           SizedBox(width: 10)
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Wrap the play or pause in a call to `setState`. This ensures the
+          // correct icon is shown.
+          setState(() {
+            // If the video is playing, pause it.
+            if (_controller.value.isPlaying) {
+              _controller.pause();
+            } else {
+              // If the video is paused, play it.
+              _controller.play();
+            }
+          });
+        },
+        // Display the correct icon depending on the state of the player.
+        child: Icon(
+          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -206,12 +241,33 @@ class _CommentsState extends State<Comments> {
                     style: TextStyle(fontSize: 16, fontFamily: 'Trebuchet'),
                   ),
                   SizedBox(height: 16),
-                  Container(
-                      width: width,
-                      child: Image.asset(
-                        widget.media,
-                        fit: BoxFit.fill,
-                      )),
+
+                  FutureBuilder(
+                    future: _initializeVideoPlayerFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        // If the VideoPlayerController has finished initialization, use
+                        // the data it provides to limit the aspect ratio of the video.
+                        return AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          // Use the VideoPlayer widget to display the video.
+                          child: VideoPlayer(_controller),
+                        );
+                      } else {
+                        // If the VideoPlayerController is still initializing, show a
+                        // loading spinner.
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                    },
+                  ),
+                  // Container(
+                  //     width: width,
+                  //     child: Image.asset(
+                  //       widget.media,
+                  //       fit: BoxFit.fill,
+                  //     )),
                   SizedBox(height: 15),
                 ],
               ),
@@ -240,30 +296,47 @@ class _CommentsState extends State<Comments> {
             BlocListener<CommentBloc, CommentState>(
               listener: (context, state) {
                 if (state is CommentLoadedState) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text(state.commented
-                          ? 'Comment added'
-                          : 'Comment was not added')));
+                  return state.commented
+                      ? individualPostBloc.add(FetchPostByIdEvents(
+                          postId: widget.postId, branchId: 'BR-1001'))
+                      : 'Comment was not added';
+                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  //     content: Text(state.commented
+                  //         ? 'Comment added'
+                  //         : 'Comment was not added')));
                 }
               },
-              child: BlocBuilder<CommentBloc, CommentState>(
+              child: BlocBuilder<IndividualPostBloc, IndividualPostState>(
                 builder: (context, state) {
-                  if (state is CommentInitial) {
+                  if (state is IndividualPostInitial) {
                     return LoadingIndicator();
-                  } else if (state is CommentLoadingState) {
+                  } else if (state is IndividualPostLoadingState) {
                     return LoadingIndicator();
-                  } else if (state is CommentLoadedState) {
-                    return users.length == 0
-                        ? Container()
-                        : _buildFeed(width, widget.comments);
-                  } else if (state is CommentErrorState) {
+                  } else if (state is IndividualPostLoadedState) {
+                    return _buildFeed(
+                        width, state.individualPostResponse.comments);
+                  } else if (state is IndividualPostErrorState) {
                     return Text("Error occurred");
                   }
-                  return users.length == 0
-                      ? Container()
-                      : _buildFeed(width, widget.comments);
+                  return Container();
+                  //_buildFeed(width, widget.comment);
                 },
               ),
+
+              // BlocBuilder<CommentBloc, CommentState>(
+              //   builder: (context, state) {
+              //     if (state is CommentInitial) {
+              //       return LoadingIndicator();
+              //     } else if (state is CommentLoadingState) {
+              //       return LoadingIndicator();
+              //     } else if (state is CommentLoadedState) {
+              //       return _buildFeed(width, widget.comments);
+              //     } else if (state is CommentErrorState) {
+              //       return Text("Error occurred");
+              //     }
+              //     return _buildFeed(width, widget.comments);
+              //   },
+              // ),
             ),
             SizedBox(height: 50)
           ],

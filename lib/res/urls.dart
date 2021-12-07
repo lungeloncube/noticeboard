@@ -13,4 +13,8 @@ class Url {
 
        static final commentReplyUrl =
       'https://asgard.qubedlab.com/digital-notice-board/api/comment/comment/branch/';
+
+      static final postByIdUrl =
+      'https://asgard.qubedlab.com/digital-notice-board/api';
+
 }
