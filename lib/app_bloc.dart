@@ -1,5 +1,6 @@
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_bloc.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
+import 'package:digital_notice_board/blocs/individual_comment_bloc/individual_comment_bloc.dart';
 import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_bloc.dart';
 import 'package:digital_notice_board/blocs/like_post_bloc/like_post_bloc.dart';
 import 'package:digital_notice_board/blocs/reply_comment_bloc/reply_comment_bloc.dart';
@@ -45,6 +46,12 @@ class AppBlocs extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => IndividualPostBloc(
+            allPostsRepository:
+                RepositoryProvider.of<AllPostsRepository>(context),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => IndividualCommentBloc(
             allPostsRepository:
                 RepositoryProvider.of<AllPostsRepository>(context),
           ),

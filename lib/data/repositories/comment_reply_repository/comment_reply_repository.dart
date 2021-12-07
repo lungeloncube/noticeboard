@@ -11,7 +11,7 @@ class ReplyCommentRepository {
       @required String branchId,
       @required String userId,
       @required String comment}) async {
-    var responseData = await commentReplyProvider.addComment(
+    var responseData = await commentReplyProvider.replyComment(
         branchId, commentId, userId, comment);
 
     if (responseData == null) {

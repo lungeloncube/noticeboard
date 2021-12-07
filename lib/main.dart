@@ -25,10 +25,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/landing': (context) => LandingPage(),
         '/home': (context) => HomePage(),
-        '/comments': (context) => Comments(),
         '/sharePost': (context) => SharePost(),
         '/reminder': (context) => ReminderPage(),
-        '/reply': (context) => CommentReply(),
       },
     );
   }

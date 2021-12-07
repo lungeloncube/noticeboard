@@ -17,4 +17,7 @@ class Url {
       static final postByIdUrl =
       'https://asgard.qubedlab.com/digital-notice-board/api';
 
+      static final commentIdUrl =
+      'https://asgard.qubedlab.com/digital-notice-board/api';
+
 }

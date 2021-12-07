@@ -27,7 +27,7 @@ class ReplyCommentBloc extends Bloc<CommentReplyEvent, ReplyCommentState> {
             userId: event.userId,
             comment: event.comment);
         print(response);
-        yield ReplyCommentLoadedState(commented: response);
+        yield ReplyCommentLoadedState(replyCommented: response);
       } catch (e) {
         dev.log('Error in reply comment: $e', name: LOG_NAME);
         yield ReplyCommentErrorState(response: false);

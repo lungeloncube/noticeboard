@@ -1,3 +1,4 @@
+import 'package:digital_notice_board/data/models/comment_response.dart';
 import 'package:digital_notice_board/data/models/individual_post_response.dart';
 import 'package:digital_notice_board/data/models/posts_response.dart';
 import 'package:digital_notice_board/data/repositories/post_repository/post_provider.dart';
@@ -28,5 +29,17 @@ class AllPostsRepository {
     }
 
     return IndividualPostResponse.fromJson(responseData);
+  }
+
+  Future<CommentResponse> getCommentById(
+      {@required commentId, @required branchId}) async {
+    var responseData = await allPostsProvider.getCommentById(
+        branchId: branchId, commentId: commentId);
+
+    if (responseData == null) {
+      return null;
+    }
+
+    return CommentResponse.fromJson(responseData);
   }
 }

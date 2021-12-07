@@ -155,7 +155,7 @@ class Users {
     this.enabled,
   });
 
-  double userId;
+  var userId;
   List<Category> categories;
   String thumbnailUrl;
   String username;
@@ -167,7 +167,7 @@ class Users {
   bool enabled;
 
   factory Users.fromJson(Map<String, dynamic> json) => Users(
-        userId: json["userId"].toDouble(),
+        userId: json["userId"],
         categories: List<Category>.from(
             json["categories"].map((x) => Category.fromJson(x))),
         thumbnailUrl: json["thumbnailUrl"],

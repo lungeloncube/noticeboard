@@ -12,11 +12,11 @@ class ReplyCommentInitial extends ReplyCommentState {}
 class ReplyCommentLoadingState extends ReplyCommentState {}
 
 class ReplyCommentLoadedState extends ReplyCommentState {
-  final bool commented;
+  final bool replyCommented;
 
-  ReplyCommentLoadedState({@required this.commented});
+  ReplyCommentLoadedState({@required this.replyCommented});
   @override
-  List<Object> get props => [commented];
+  List<Object> get props => [replyCommented];
 }
 
 class ReplyCommentErrorState extends ReplyCommentState {

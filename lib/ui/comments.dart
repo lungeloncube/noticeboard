@@ -6,7 +6,6 @@ import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_
 import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_state.dart';
 import 'package:digital_notice_board/data/models/individual_post_response.dart';
 import 'package:digital_notice_board/ui/comment_reply.dart';
-import 'package:digital_notice_board/ui/users.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
 import 'package:digital_notice_board/widgets/icon_button.dart';
 import 'package:digital_notice_board/widgets/loading_indicator.dart';
@@ -49,8 +48,6 @@ class Comments extends StatefulWidget {
 
 class _CommentsState extends State<Comments> {
   bool isLiked = false;
-  bool isVisible = true;
-  bool isCommentReply = false;
   bool isMore = false;
   bool isSearch = false;
   TextEditingController _textController = TextEditingController();
@@ -63,51 +60,6 @@ class _CommentsState extends State<Comments> {
   IndividualPostResponse response;
 
   static const String LOG_NAME = 'screen.comments';
-
-  List<User> users = [
-    User(
-        firstName: "Lungelo",
-        lastName: "Ncube",
-        url: "assets/one.jpg",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Stalker",
-        lastName: "Stalker",
-        url: "assets/two.jpg",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Yolanda",
-        lastName: "Ndlovu",
-        url: "assets/three.jpg",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Lethu",
-        lastName: "Timm",
-        url: "assets/four.jpg",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Anele",
-        lastName: "Moyo",
-        url: "assets/five.png",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg"),
-    User(
-        firstName: "Aisha",
-        lastName: "Ncube",
-        url: "assets/six.png",
-        date: "Monday July 9, 12:15pm",
-        post: "lorem ipsum ",
-        media: "assets/post_image.jpg")
-  ];
 
   @override
   void initState() {
@@ -126,6 +78,13 @@ class _CommentsState extends State<Comments> {
 
     // Use the controller to loop the video.
     _controller.setLooping(true);
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    commentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -168,6 +127,7 @@ class _CommentsState extends State<Comments> {
             }
           });
         },
+        tooltip: 'play/pause',
         // Display the correct icon depending on the state of the player.
         child: Icon(
           _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
@@ -208,7 +168,6 @@ class _CommentsState extends State<Comments> {
                               (DateFormat.jm()
                                   .format(widget.date)
                                   .toLowerCase())),
-                          //widget.date,
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16))
                     ],
@@ -241,7 +200,6 @@ class _CommentsState extends State<Comments> {
                     style: TextStyle(fontSize: 16, fontFamily: 'Trebuchet'),
                   ),
                   SizedBox(height: 16),
-
                   FutureBuilder(
                     future: _initializeVideoPlayerFuture,
                     builder: (context, snapshot) {
@@ -262,12 +220,6 @@ class _CommentsState extends State<Comments> {
                       }
                     },
                   ),
-                  // Container(
-                  //     width: width,
-                  //     child: Image.asset(
-                  //       widget.media,
-                  //       fit: BoxFit.fill,
-                  //     )),
                   SizedBox(height: 15),
                 ],
               ),
@@ -281,15 +233,9 @@ class _CommentsState extends State<Comments> {
                 children: [
                   Expanded(
                       flex: 4,
-                      child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isVisible = !isVisible;
-                            });
-                          },
-                          child: Text("Comments:",
-                              style: TextStyle(
-                                  fontFamily: 'Trebuchet', fontSize: 16)))),
+                      child: Text("Comments:",
+                          style: TextStyle(
+                              fontFamily: 'Trebuchet', fontSize: 16))),
                 ],
               ),
             ),
@@ -300,10 +246,6 @@ class _CommentsState extends State<Comments> {
                       ? individualPostBloc.add(FetchPostByIdEvents(
                           postId: widget.postId, branchId: 'BR-1001'))
                       : 'Comment was not added';
-                  // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  //     content: Text(state.commented
-                  //         ? 'Comment added'
-                  //         : 'Comment was not added')));
                 }
               },
               child: BlocBuilder<IndividualPostBloc, IndividualPostState>(
@@ -319,24 +261,8 @@ class _CommentsState extends State<Comments> {
                     return Text("Error occurred");
                   }
                   return Container();
-                  //_buildFeed(width, widget.comment);
                 },
               ),
-
-              // BlocBuilder<CommentBloc, CommentState>(
-              //   builder: (context, state) {
-              //     if (state is CommentInitial) {
-              //       return LoadingIndicator();
-              //     } else if (state is CommentLoadingState) {
-              //       return LoadingIndicator();
-              //     } else if (state is CommentLoadedState) {
-              //       return _buildFeed(width, widget.comments);
-              //     } else if (state is CommentErrorState) {
-              //       return Text("Error occurred");
-              //     }
-              //     return _buildFeed(width, widget.comments);
-              //   },
-              // ),
             ),
             SizedBox(height: 50)
           ],
@@ -446,19 +372,19 @@ class _CommentsState extends State<Comments> {
                                     fontFamily: 'Trebuchet', fontSize: 16)),
                           ],
                         )),
-                    _buildCommentActions(context, index),
+                    _buildCommentActions(context, index, comments),
                   ],
                 ),
               ),
             ),
           ],
         ),
-        // SizedBox(height: 50),
       ],
     );
   }
 
-  Row _buildCommentActions(BuildContext context, int index) {
+  Row _buildCommentActions(
+      BuildContext context, int index, List<Comment> comments) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -479,14 +405,18 @@ class _CommentsState extends State<Comments> {
               context,
               MaterialPageRoute(
                 builder: (context) => CommentReply(
-                  user: users[index],
-                  //user: users[index],
+                  comment: comments[index].commentText,
+                  commentId: comments[index].commentId,
+                  firstName: comments[index].users.firstName,
+                  lastName: comments[index].users.lastName,
+                  // userId: comments[index].users.userId,
+                  thumbnail: comments[index].users.thumbnailUrl,
                 ),
               ),
             );
-            setState(() {
-              isCommentReply = true;
-            });
+            // setState(() {
+            //   isCommentReply = true;
+            // });
           },
         ),
       ],

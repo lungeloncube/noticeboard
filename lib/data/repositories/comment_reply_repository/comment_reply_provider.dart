@@ -12,7 +12,7 @@ class CommentReplyProvider {
 
   CommentReplyProvider({@required this.client});
 
-  Future addComment(
+  Future replyComment(
       String branchId, String commentId, String userId, String comment) async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.commentReplyUrl}$branchId';

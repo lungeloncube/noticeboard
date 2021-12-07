@@ -77,7 +77,7 @@ class Reply extends StatelessWidget {
                                 )
                               ],
                             ),
-                            Text(post * 20,
+                            Text(post,
                                 style: TextStyle(
                                     fontFamily: 'Trebuchet', fontSize: 16)),
                           ],
