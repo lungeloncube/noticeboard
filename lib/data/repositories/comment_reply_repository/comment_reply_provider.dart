@@ -7,7 +7,7 @@ import 'package:http/http.dart' show Client;
 import 'dart:developer' as dev;
 
 class CommentReplyProvider {
-  static const String LOG_NAME = 'screen.CommentReply';
+  static const String LOG_NAME = 'screen.CommentReplyProvider';
   final Client client;
 
   CommentReplyProvider({@required this.client});

@@ -14,7 +14,6 @@ import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:developer' as dev;
-
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 
@@ -24,8 +23,7 @@ class Comments extends StatefulWidget {
   final DateTime date;
   final String url;
   final String post;
-  final String media;
-  //final List<Comment> comment;
+  // final String media;
   final postUserId;
   final postId;
 
@@ -36,10 +34,9 @@ class Comments extends StatefulWidget {
     @required this.date,
     @required this.url,
     @required this.post,
-    @required this.media,
+    //@required this.media,
     @required this.postUserId,
     @required this.postId,
-    //this.comment
   }) : super(key: key);
 
   @override
@@ -70,8 +67,7 @@ class _CommentsState extends State<Comments> {
     individualPostBloc
         .add(FetchPostByIdEvents(postId: widget.postId, branchId: 'BR-1001'));
     _controller = VideoPlayerController.network(
-      'https://drive.google.com/file/d/1IuZiDivt_TpolvV77I0D2LTDHIuMml8u/viewk',
-    );
+        'https://drive.google.com/file/d/1IuZiDivt_TpolvV77I0D2LTDHIuMml8u/viewk');
 
     // Initialize the controller and store the Future for later use.
     _initializeVideoPlayerFuture = _controller.initialize();
@@ -245,7 +241,11 @@ class _CommentsState extends State<Comments> {
                   return state.commented
                       ? individualPostBloc.add(FetchPostByIdEvents(
                           postId: widget.postId, branchId: 'BR-1001'))
-                      : 'Comment was not added';
+                      : ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Comment was not added'),
+                          ),
+                        );
                 }
               },
               child: BlocBuilder<IndividualPostBloc, IndividualPostState>(
@@ -409,14 +409,10 @@ class _CommentsState extends State<Comments> {
                   commentId: comments[index].commentId,
                   firstName: comments[index].users.firstName,
                   lastName: comments[index].users.lastName,
-                  // userId: comments[index].users.userId,
                   thumbnail: comments[index].users.thumbnailUrl,
                 ),
               ),
             );
-            // setState(() {
-            //   isCommentReply = true;
-            // });
           },
         ),
       ],

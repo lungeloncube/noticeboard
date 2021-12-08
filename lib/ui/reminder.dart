@@ -64,9 +64,7 @@ class _ReminderPageState extends State<ReminderPage> {
                     maxLength: 160,
                     hintText: 'Type here...',
                     minLength: 7,
-                  )
-                  //textField(),
-                  ),
+                  )),
               SizedBox(height: 8),
               Container(
                 height: 40,
@@ -131,8 +129,8 @@ class _ReminderPageState extends State<ReminderPage> {
                             onTap: () {
                               _selectTime();
                             },
-                         child: Text(_time.format(context),
-                                     style: TextStyle(
+                            child: Text(_time.format(context),
+                                style: TextStyle(
                                     fontSize: 16, fontFamily: 'Trebuchet')))
                       ],
                     ),

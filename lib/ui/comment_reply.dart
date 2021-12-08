@@ -21,17 +21,14 @@ class CommentReply extends StatefulWidget {
   final lastName;
   final comment;
   final thumbnail;
-  // final userId;
 
   const CommentReply({
     Key key,
-    // @required this.user,
     @required this.commentId,
     @required this.firstName,
     @required this.lastName,
     @required this.comment,
     @required this.thumbnail,
-    //@required this.userId
   }) : super(key: key);
 
   @override
@@ -64,7 +61,6 @@ class _CommentReplyState extends State<CommentReply> {
   @override
   void dispose() {
     replyCommentController.dispose();
-
     super.dispose();
   }
 
@@ -119,12 +115,11 @@ class _CommentReplyState extends State<CommentReply> {
                   return state.replyCommented
                       ? individualCommentBloc.add(FetchCommentByIdEvents(
                           commentId: widget.commentId, branchId: branchId))
-                      : Text("Could not reply");
-
-                  // return state.replyCommented
-                  // ? FetchCommentByIdEvents(
-                  //     commentId: widget.commentId, branchId: branchId)
-                  // : Text("Could not reply");
+                      : ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Could not reply to comment'),
+                          ),
+                        );
                 }
               },
               child: BlocBuilder<IndividualCommentBloc, IndividualCommentState>(
@@ -194,17 +189,6 @@ class _CommentReplyState extends State<CommentReply> {
                           path: comments[index].users.thumbnailUrl == ''
                               ? 'assets/avatar.png'
                               : comments[index].users.thumbnailUrl,
-                          // path: 'assets/avatar.png',
-                          // path: commentResponse.comments[index].comments[index]
-                          //             .users.thumbnailUrl ==
-                          //         ""
-                          //     ? 'assets/avatar.png'
-                          //     : commentResponse.comments[index].comments[index]
-                          //                 .users.thumbnailUrl ==
-                          //             null
-                          //         ? 'assets/avatar.png'
-                          //         : commentResponse.comments[index]
-                          //             .comments[index].users.thumbnailUrl,
                           radius: 16.0)),
                 ],
               ),
@@ -245,20 +229,20 @@ class _CommentReplyState extends State<CommentReply> {
           icon: Icons.reply,
           color: Colors.blue,
           onPressed: () {
-            // Navigator.pushReplacement(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => CommentReply(
-            //       comment: comments[index].commentText,
-            //       commentId: comments[index].commentId,
-            //       firstName: comments[index].users.firstName,
-            //       lastName: comments[index].users.lastName,
-            //       thumbnail: comments[index].users.thumbnailUrl == ''
-            //           ? 'assets/avatar.png'
-            //           : widget.thumbnail,
-            //     ),
-            //   ),
-            // );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CommentReply(
+                  comment: comments[index].commentText,
+                  commentId: comments[index].commentId,
+                  firstName: comments[index].users.firstName,
+                  lastName: comments[index].users.lastName,
+                  thumbnail: comments[index].users.thumbnailUrl == ''
+                      ? 'assets/avatar.png'
+                      : widget.thumbnail,
+                ),
+              ),
+            );
           },
         ),
       ],

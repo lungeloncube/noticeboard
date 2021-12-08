@@ -13,12 +13,9 @@ import 'package:digital_notice_board/widgets/loading_indicator.dart';
 import 'package:digital_notice_board/widgets/search_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 import 'dart:developer' as dev;
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:video_player/video_player.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -26,14 +23,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  VideoPlayerController _controller;
-  Future<void> _initializeVideoPlayerFuture;
   ScrollController _scrollController =
       new ScrollController(); // set controller on scrolling
   bool _show = true;
   static const String LOG_NAME = 'screen.home';
-
-  //bool isLiked = false;
 
   bool isVisible = false;
   bool isMore = false;
@@ -110,7 +103,6 @@ class _HomePageState extends State<HomePage> {
             },
             child: Icon(
               isSearch ? Icons.cancel : Icons.search,
-              //Icons.search,
               color: Colors.black,
             ),
           ),
@@ -169,15 +161,12 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     );
-
-                    // buildErrorUi(state.message);
                   }
                   return Container();
                 },
               ),
             ),
           ))),
-      //_buildFeed(width),
       floatingActionButton: Visibility(
         visible: _show,
         child: FloatingActionButton(
@@ -275,28 +264,9 @@ class _HomePageState extends State<HomePage> {
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                       SizedBox(height: 15),
-                      // Container(
-                      //     width: width,
-                      //     child: Image.asset(
-                      //       "assets/post_image.jpg",
-                      //       fit: BoxFit.fill,
-                      //     )),
-
-                      // Container(
-                      //   width: 100.0,
-                      //   height: 56.0,
-                      //   child: VideoPlayer(_controller),
-                      // ),
-
-                      // AspectRatio(
-                      //   aspectRatio: _controller.value.aspectRatio,
-                      //   child: VideoPlayer(_controller),
-                      // ),
-
                       IconButton(
                           icon: Icon(Icons.play_circle_fill_rounded),
                           onPressed: () {}),
-
                       SizedBox(height: 15),
                     ],
                   ),
@@ -339,9 +309,8 @@ class _HomePageState extends State<HomePage> {
                           lastName: response.posts[index].users.lastName,
                           date: response.posts[index].createdAt,
                           post: response.posts[index].postText,
-                          media: "assets/post_image.jpg",
+                          // media: response.posts[index].mediaFiles[0].url,
                           url: response.posts[index].users.thumbnailUrl,
-                          // comment: response.posts[index].comments,
                           postId: response.posts[index].postId,
                           postUserId: response.posts[index].users.userId,
                         ),
@@ -397,9 +366,8 @@ class _HomePageState extends State<HomePage> {
                         lastName: response.posts[index].users.lastName,
                         date: response.posts[index].createdAt,
                         post: response.posts[index].postText,
-                        media: "assets/post_image.jpg",
+                        // media: "assets/post_image.jpg",
                         url: response.posts[index].users.thumbnailUrl,
-                        //  comment: response.posts[index].comments,
                         postId: response.posts[index].postId,
                         postUserId: response.posts[index].users.userId,
                       ),

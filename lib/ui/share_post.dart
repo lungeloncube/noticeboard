@@ -1,12 +1,16 @@
 import 'dart:io';
 
+import 'package:digital_notice_board/blocs/share_post/share_post_bloc.dart';
+import 'package:digital_notice_board/blocs/share_post/share_post_event.dart';
+import 'package:digital_notice_board/blocs/share_post/share_post_state.dart';
 import 'package:digital_notice_board/widgets/Icon.dart';
 import 'package:digital_notice_board/widgets/avatar.dart';
+import 'package:digital_notice_board/widgets/loading_indicator.dart';
 import 'package:digital_notice_board/widgets/text_form_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_player/video_player.dart';
-import 'package:mime/mime.dart';
 import 'dart:developer' as dev;
 
 class SharePost extends StatefulWidget {
@@ -15,14 +19,25 @@ class SharePost extends StatefulWidget {
 }
 
 class _SharePostState extends State<SharePost> {
-  static const String LOG_NAME = 'screen.landing';
-  TextEditingController messageController = TextEditingController();
+  static const String LOG_NAME = 'screen.SharePost';
+  TextEditingController postTextController = TextEditingController();
   bool isCamera = false;
   bool isGallery = false;
   bool isVideo = false;
- File _image;
+  String branchId = 'BR-1001';
+  File _imageCamera;
+  File _imageGallery;
   File _video;
 
+  SharePostBloc sharePostBloc;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    sharePostBloc = BlocProvider.of<SharePostBloc>(context);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +48,39 @@ class _SharePostState extends State<SharePost> {
             style: TextStyle(fontFamily: 'Trebuchet', fontSize: 22)),
         actions: [
           TextButton(
-              onPressed: () {},
+              onPressed: () {
+                print(
+                  'path is' +
+                      (isCamera
+                              ? _imageCamera
+                              : isGallery
+                                  ? _imageGallery
+                                  : isVideo
+                                      ? _video
+                                      : _imageGallery)
+                          .path,
+                );
+                sharePostBloc.add(ShareEvent(
+                    filename: (isCamera
+                            ? _imageCamera
+                            : isGallery
+                                ? _imageGallery
+                                : isVideo
+                                    ? _video
+                                    : _imageGallery)
+                        .path,
+                    branchId: branchId,
+                    postText: postTextController.text,
+                    categoryId: 1.toString(),
+                    userId: '-5906054645658519212',
+                    file: isCamera
+                        ? _imageCamera
+                        : isGallery
+                            ? _imageGallery
+                            : isVideo
+                                ? _video
+                                : _imageGallery));
+              },
               child: Text("Post",
                   style: TextStyle(
                       fontFamily: 'Trebuchet',
@@ -63,17 +110,43 @@ class _SharePostState extends State<SharePost> {
                 ],
               ),
             ]),
-            Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: BorderlessInputField(
-                  hint: 'What would you like to post?',
-                  maxLines: null,
-                )),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  uploadedMedia(isCamera, isVideo, isGallery),
-                ],
+            BlocListener<SharePostBloc, SharePostState>(
+              listener: (context, state) {
+                if (state is SharePostLoadedState) {
+                  if (state.shared)
+                    return ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Post created successfully"),
+                      ),
+                    );
+                  else
+                    return ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Failed to create post"),
+                      ),
+                    );
+                }
+                if (state is SharePostErrorState) {
+                  return ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                          "An error occured while posting, please try again"),
+                    ),
+                  );
+                }
+              },
+              child: BlocBuilder<SharePostBloc, SharePostState>(
+                builder: (context, state) {
+                  if (state is SharePostInitial) {
+                    return LoadingIndicator();
+                  } else if (state is SharePostLoadingState) {
+                    return LoadingIndicator();
+                  } else if (state is SharePostLoadedState) {
+                    return _buildSharePost();
+                  }
+
+                  return _buildSharePost();
+                },
               ),
             ),
           ]),
@@ -119,21 +192,41 @@ class _SharePostState extends State<SharePost> {
       ),
     );
   }
+
+  Column _buildSharePost() {
+    return Column(
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: BorderlessInputField(
+              controller: postTextController,
+              hint: 'What would you like to post?',
+              maxLines: null,
+            )),
+        Container(
+          child: Column(
+            children: <Widget>[
+              uploadedMedia(isCamera, isVideo, isGallery),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   final picker = ImagePicker();
   VideoPlayerController _videoPlayerController;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
-
-
     setState(() {
       isCamera = true;
-      isGallery=false;
-      isVideo=false;
+      isGallery = false;
+      isVideo = false;
 
       if (pickedFile != null) {
-        _image = File(pickedFile.path);
+        _imageCamera = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -143,13 +236,12 @@ class _SharePostState extends State<SharePost> {
   Future getGalleryMedia() async {
     final galleryFile = await picker.getImage(source: ImageSource.gallery);
 
-
     setState(() {
       isGallery = true;
-      isCamera=false;
-      isVideo=false;
+      isCamera = false;
+      isVideo = false;
       if (galleryFile != null) {
-        _image = File(galleryFile.path);
+        _imageGallery = File(galleryFile.path);
       } else {
         print('No image selected.');
       }
@@ -158,8 +250,8 @@ class _SharePostState extends State<SharePost> {
 
   Future _captureVideo() async {
     isVideo = true;
-    isCamera=false;
-    isGallery=false;
+    isCamera = false;
+    isGallery = false;
     PickedFile pickedFile = await picker.getVideo(source: ImageSource.camera);
     _video = File(pickedFile.path);
     _videoPlayerController = VideoPlayerController.file(_video)
@@ -169,12 +261,13 @@ class _SharePostState extends State<SharePost> {
       });
   }
 
-
   Widget uploadedMedia(isCamera, isVideo, isGallery) {
     if (isCamera) {
-      if(_image != null)
-      return (Image.file(_image));
-      else {return Container();}
+      if (_imageCamera != null)
+        return (Image.file(_imageCamera));
+      else {
+        return Container();
+      }
     }
     if (isVideo) {
       return _videoPlayerController.value.initialized
@@ -184,9 +277,11 @@ class _SharePostState extends State<SharePost> {
             )
           : Container();
     } else if (isGallery) {
-      if(_image != null)
-        return (Image.file(_image));
-      else {return Container();}
+      if (_imageGallery != null)
+        return (Image.file(_imageGallery));
+      else {
+        return Container();
+      }
     }
 
     return Container();

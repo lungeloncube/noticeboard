@@ -1,4 +1,3 @@
-
 import 'package:digital_notice_board/ui/home.dart';
 import 'package:flutter/material.dart';
 import 'dart:developer' as dev;
@@ -39,8 +38,7 @@ class _LandingPageState extends State<LandingPage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         elevation: 5,
-        type: BottomNavigationBarType
-            .fixed, // this will be set when a new tab is tapped
+        type: BottomNavigationBarType.fixed,
         items: [
           BottomNavigationBarItem(
             icon: new Icon(Icons.home),
