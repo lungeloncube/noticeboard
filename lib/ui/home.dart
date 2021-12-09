@@ -38,7 +38,6 @@ class _HomePageState extends State<HomePage> {
   AllPostsBloc allPostsBloc;
   LikePostBloc likePostBloc;
   PostsResponse postsResponse;
-  Uint8List imageBytes;
 
   @override
   void initState() {
@@ -266,6 +265,7 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     children: [
                       Text('${postsResponse.posts[index].postText}',
+                          textAlign: TextAlign.start,
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                       SizedBox(height: 15),
@@ -320,7 +320,6 @@ class _HomePageState extends State<HomePage> {
                           date: response.posts[index].createdAt,
                           post: response.posts[index].postText,
                           url: response.posts[index].users.thumbnailUrl,
-                          media: response.posts[index].mediaFiles[index].url,
                           postId: response.posts[index].postId,
                           postUserId: response.posts[index].users.userId,
                         ),
@@ -377,7 +376,6 @@ class _HomePageState extends State<HomePage> {
                         date: response.posts[index].createdAt,
                         post: response.posts[index].postText,
                         url: response.posts[index].users.thumbnailUrl,
-                        media: response.posts[index].mediaFiles[index].url,
                         postId: response.posts[index].postId,
                         postUserId: response.posts[index].users.userId,
                       ),

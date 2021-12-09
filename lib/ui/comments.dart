@@ -23,7 +23,6 @@ class Comments extends StatefulWidget {
   final DateTime date;
   final String url;
   final String post;
-  final String media;
   final postUserId;
   final postId;
 
@@ -34,7 +33,6 @@ class Comments extends StatefulWidget {
     @required this.date,
     @required this.url,
     @required this.post,
-    @required this.media,
     @required this.postUserId,
     @required this.postId,
   }) : super(key: key);
@@ -66,7 +64,9 @@ class _CommentsState extends State<Comments> {
 
     individualPostBloc
         .add(FetchPostByIdEvents(postId: widget.postId, branchId: 'BR-1001'));
-    _controller = VideoPlayerController.network(widget.media);
+    _controller = VideoPlayerController.network(
+        "https://asgard.qubedlab.com/digital-notice-board/api/post/download/media/image_picker1203378700.jpg");
+
     // Initialize the controller and store the Future for later use.
     _initializeVideoPlayerFuture = _controller.initialize();
     // Use the controller to loop the video.
