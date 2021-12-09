@@ -13,11 +13,9 @@ class ReplyCommentRepository {
       @required String comment}) async {
     var responseData = await commentReplyProvider.replyComment(
         branchId, commentId, userId, comment);
-
     if (responseData == null) {
       return null;
     }
-
     return responseData;
   }
 }

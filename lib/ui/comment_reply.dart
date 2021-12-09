@@ -48,11 +48,8 @@ class _CommentReplyState extends State<CommentReply> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
     replyCommentBloc = BlocProvider.of<ReplyCommentBloc>(context);
     individualCommentBloc = BlocProvider.of<IndividualCommentBloc>(context);
-
     individualCommentBloc.add(FetchCommentByIdEvents(
         commentId: widget.commentId, branchId: 'BR-1001'));
     super.initState();

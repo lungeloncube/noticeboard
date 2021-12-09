@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:digital_notice_board/data/functions/general_functions.dart';
 import 'package:digital_notice_board/res/urls.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,9 +15,6 @@ class AddCommentProvider {
       String branchId, String postId, String userId, String comment) async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.addCommentUrl}$branchId';
-
-    print("......" + url);
-
     var response = await client.post(
       Uri.parse(url),
       headers: headers,

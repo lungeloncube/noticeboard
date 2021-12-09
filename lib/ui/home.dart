@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_post_state.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_event.dart';
@@ -35,16 +38,14 @@ class _HomePageState extends State<HomePage> {
   AllPostsBloc allPostsBloc;
   LikePostBloc likePostBloc;
   PostsResponse postsResponse;
+  Uint8List imageBytes;
 
   @override
   void initState() {
     super.initState();
-
     allPostsBloc = BlocProvider.of<AllPostsBloc>(context);
     allPostsBloc.add(FetchAllPostsEvents());
-
     likePostBloc = BlocProvider.of<LikePostBloc>(context);
-
     handleScroll();
   }
 
@@ -130,7 +131,11 @@ class _HomePageState extends State<HomePage> {
                   } else if (state is AllPostsLoadingState) {
                     return LoadingIndicator();
                   } else if (state is AllPostsLoadedState) {
-                    return _buildFeed(width, state.postsResponse);
+                    if (state.postsResponse.posts.isEmpty) {
+                      return Center(child: Text("No Posts "));
+                    } else {
+                      return _buildFeed(width, state.postsResponse);
+                    }
                   } else if (state is AllPostsErrorState) {
                     return Center(
                       child: Container(
@@ -264,9 +269,14 @@ class _HomePageState extends State<HomePage> {
                           style:
                               TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
                       SizedBox(height: 15),
-                      IconButton(
-                          icon: Icon(Icons.play_circle_fill_rounded),
-                          onPressed: () {}),
+                      displayMedia(
+                              postsResponse.posts[index].mediaFiles[0].type,
+                              postsResponse.posts[index].mediaFiles[0].url,
+                              postsResponse
+                                  .posts[index].mediaFiles[0].thumbnailUrl) ??
+                          IconButton(
+                              icon: Icon(Icons.play_circle_fill_rounded),
+                              onPressed: () {}),
                       SizedBox(height: 15),
                     ],
                   ),
@@ -309,8 +319,8 @@ class _HomePageState extends State<HomePage> {
                           lastName: response.posts[index].users.lastName,
                           date: response.posts[index].createdAt,
                           post: response.posts[index].postText,
-                          // media: response.posts[index].mediaFiles[0].url,
                           url: response.posts[index].users.thumbnailUrl,
+                          media: response.posts[index].mediaFiles[index].url,
                           postId: response.posts[index].postId,
                           postUserId: response.posts[index].users.userId,
                         ),
@@ -366,8 +376,8 @@ class _HomePageState extends State<HomePage> {
                         lastName: response.posts[index].users.lastName,
                         date: response.posts[index].createdAt,
                         post: response.posts[index].postText,
-                        // media: "assets/post_image.jpg",
                         url: response.posts[index].users.thumbnailUrl,
+                        media: response.posts[index].mediaFiles[index].url,
                         postId: response.posts[index].postId,
                         postUserId: response.posts[index].users.userId,
                       ),
@@ -394,5 +404,20 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  displayMedia(String mediaType, String mediaUrl, String thumbnailUrl) {
+    if (mediaType.contains("Image")) {
+      return Image.network(mediaUrl);
+    } else if (mediaType.contains("Video")) {
+      return Image.network(thumbnailUrl);
+    } else {
+      return Container(
+        child: Image.asset(
+          'assets/post_image.jpg',
+          fit: BoxFit.fill,
+        ),
+      );
+    }
   }
 }

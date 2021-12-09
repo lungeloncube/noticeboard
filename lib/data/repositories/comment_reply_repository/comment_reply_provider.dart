@@ -16,9 +16,6 @@ class CommentReplyProvider {
       String branchId, String commentId, String userId, String comment) async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.commentReplyUrl}$branchId';
-
-    print("......" + url);
-
     var response = await client.post(
       Uri.parse(url),
       headers: headers,

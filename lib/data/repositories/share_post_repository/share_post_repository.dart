@@ -21,12 +21,10 @@ class SharePostRepository {
         file: file,
         branchId: branchId,
         postText: postText,
-        filename:filename);
-
+        filename: filename);
     if (responseData == null) {
       return null;
     }
-
     return responseData;
   }
 }

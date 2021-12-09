@@ -19,8 +19,6 @@ class SharePostProvider {
       @required filename}) async {
     var headers = await GeneralFunctions.getMultiPartHeaders();
     var url = '${Url.sharePostUrl}$branchId';
-
-    print("......" + url);
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     request.files.add(http.MultipartFile.fromBytes(
@@ -32,17 +30,10 @@ class SharePostProvider {
     request.fields['userId'] = userId;
 
     var response = await request.send();
-
     if (response.statusCode == 200) {
-      print(true);
       return true;
     } else {
-      print(response.statusCode);
       return false;
     }
-    // } catch (e) {
-    //   dev.log('Error occurred in share post provider $e', name: LOG_NAME);
-    //   throw Exception('An error occurred. Try again later.');
-    // }
   }
 }

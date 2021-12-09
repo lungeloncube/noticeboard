@@ -13,11 +13,9 @@ class AddCommentRepository {
       @required String comment}) async {
     var responseData =
         await addCommentProvider.addComment(branchId, postId, userId, comment);
-
     if (responseData == null) {
       return null;
     }
-
     return responseData;
   }
 }

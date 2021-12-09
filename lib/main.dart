@@ -1,7 +1,5 @@
 import 'package:digital_notice_board/app_bloc.dart';
 import 'package:digital_notice_board/app_repositories.dart';
-import 'package:digital_notice_board/ui/comment_reply.dart';
-import 'package:digital_notice_board/ui/comments.dart';
 import 'package:digital_notice_board/ui/home.dart';
 import 'package:digital_notice_board/ui/landing_page.dart';
 import 'package:digital_notice_board/ui/reminder.dart';

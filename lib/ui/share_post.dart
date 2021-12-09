@@ -33,8 +33,6 @@ class _SharePostState extends State<SharePost> {
 
   @override
   void initState() {
-    // TODO: implement initState
-
     sharePostBloc = BlocProvider.of<SharePostBloc>(context);
     super.initState();
   }
@@ -49,17 +47,6 @@ class _SharePostState extends State<SharePost> {
         actions: [
           TextButton(
               onPressed: () {
-                print(
-                  'path is' +
-                      (isCamera
-                              ? _imageCamera
-                              : isGallery
-                                  ? _imageGallery
-                                  : isVideo
-                                      ? _video
-                                      : _imageGallery)
-                          .path,
-                );
                 sharePostBloc.add(ShareEvent(
                     filename: (isCamera
                             ? _imageCamera
@@ -144,7 +131,6 @@ class _SharePostState extends State<SharePost> {
                   } else if (state is SharePostLoadedState) {
                     return _buildSharePost();
                   }
-
                   return _buildSharePost();
                 },
               ),
@@ -219,12 +205,10 @@ class _SharePostState extends State<SharePost> {
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
-
     setState(() {
       isCamera = true;
       isGallery = false;
       isVideo = false;
-
       if (pickedFile != null) {
         _imageCamera = File(pickedFile.path);
       } else {
@@ -235,7 +219,6 @@ class _SharePostState extends State<SharePost> {
 
   Future getGalleryMedia() async {
     final galleryFile = await picker.getImage(source: ImageSource.gallery);
-
     setState(() {
       isGallery = true;
       isCamera = false;
@@ -283,7 +266,6 @@ class _SharePostState extends State<SharePost> {
         return Container();
       }
     }
-
     return Container();
   }
 }

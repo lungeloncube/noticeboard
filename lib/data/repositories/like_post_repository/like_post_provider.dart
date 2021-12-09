@@ -11,9 +11,6 @@ class LikePostProvider {
   Future likePost(String postId, String userId) async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.likeUrl}user/$userId/post/$postId';
-
-    print("......" + url);
-
     var response = await client.post(Uri.parse(url), headers: headers);
     if (response.statusCode == 201) {
       if (response.body.contains("New Liked Post") ||
@@ -29,9 +26,6 @@ class LikePostProvider {
   Future unLikePost(String postId, String userId) async {
     var headers = await GeneralFunctions.getHeaders();
     var url = '${Url.unLikeUrl}user/$userId/post/$postId';
-
-    print("......" + url);
-
     var response = await client.delete(Uri.parse(url), headers: headers);
     if (response.statusCode == 204) {
       if (response.body.contains("")) {
