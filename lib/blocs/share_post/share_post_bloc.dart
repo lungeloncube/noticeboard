@@ -15,8 +15,8 @@ class SharePostBloc extends Bloc<SharePostEvent, SharePostState> {
       : super(initialState);
   @override
   Stream<SharePostState> mapEventToState(
-      SharePostEvent event,
-      ) async* {
+    SharePostEvent event,
+  ) async* {
     if (event is ShareEvent) {
       yield SharePostLoadingState();
 
@@ -26,8 +26,9 @@ class SharePostBloc extends Bloc<SharePostEvent, SharePostState> {
             branchId: event.branchId,
             userId: event.userId,
             file: event.file,
-            categoryId:event.categoryId,
-            filename:event.filename);
+            categoryId: event.categoryId,
+            filename: event.filename,
+            mediaType: event.mediaType);
         print(response);
         yield SharePostLoadedState(shared: response);
       } catch (e) {

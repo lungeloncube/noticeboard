@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_event.dart';
 import 'package:digital_notice_board/blocs/share_post/share_post_bloc.dart';
 import 'package:digital_notice_board/blocs/share_post/share_post_event.dart';
 import 'package:digital_notice_board/blocs/share_post/share_post_state.dart';
@@ -50,47 +52,54 @@ class _SharePostState extends State<SharePost> {
         actions: [
           TextButton(
               onPressed: () {
-                sharePostBloc.add(ShareEvent(
-                    filename: (isCamera
-                            ? _imageCamera
-                            : isVideo
-                                ? _video
-                                : isGalleryImage
-                                    ? _imageGallery
-                                    : isGalleryVideo
-                                        ? _galleryVideo
-                                        : _imageCamera)
-                        .path,
-                    // filename: (isCamera
-                    //         ? _imageCamera
-                    //         : isGallery
-                    //             ? _imageGallery
-                    //             : isVideo
-                    //                 ? _video
-                    //                 : _imageGallery)
-                    //     .path,
-                    branchId: branchId,
-                    postText: postTextController.text,
-                    categoryId: 1.toString(),
-                    userId: '-5906054645658519212',
-                    file: isCamera
-                        ? _imageCamera
-                        : isVideo
-                            ? _video
-                            : isGalleryImage
-                                ? _imageGallery
-                                : isGalleryVideo
-                                    ? _galleryVideo
-                                    : _imageCamera
-                    // isCamera
-                    //     ? _imageCamera
-                    //     : isGallery
-                    //         ? _imageGallery
-                    //         : isVideo
-                    //             ? _video
-                    //             : _imageGallery
-                    ));
-              },
+                print(getMediaType(
+                  isCamera,
+                  isGalleryImage,
+                  isGalleryVideo,
+                  isVideo,
+                ));
+                sharePostBloc.add(
+                  ShareEvent(
+                      filename: (isCamera
+                          ? _imageCamera
+                          : isVideo
+                          ? _video
+                          : isGalleryImage
+                          ? _imageGallery
+                          : isGalleryVideo
+                          ? _galleryVideo
+                          : _imageCamera)==null?'':(isCamera
+                              ? _imageCamera
+                              : isVideo
+                                  ? _video
+                                  : isGalleryImage
+                                      ? _imageGallery
+                                      : isGalleryVideo
+                                          ? _galleryVideo
+                                          : _imageCamera)
+                          .path,
+                      branchId: branchId,
+                      postText: postTextController.text,
+                      categoryId: 1.toString(),
+                      userId: '8638313813577931224',
+                      file: isCamera
+                          ? _imageCamera
+                          : isVideo
+                              ? _video
+                              : isGalleryImage
+                                  ? _imageGallery
+                                  : isGalleryVideo
+                                      ? _galleryVideo
+                                      : _imageCamera,
+                      mediaType: getMediaType(
+                        isCamera,
+                        isGalleryImage,
+                        isGalleryVideo,
+                        isVideo,
+                      )),
+                );
+                postTextController.clear();
+                      },
               child: Text("Post",
                   style: TextStyle(
                       fontFamily: 'Trebuchet',
@@ -108,14 +117,14 @@ class _SharePostState extends State<SharePost> {
                   CircleAvatar(
                     radius: 22,
                     backgroundColor: Colors.grey,
-                    child: Avatar(radius: 20.0, path: 'assets/three.jpg'),
+                    child: Avatar(radius: 20.0, path: 'assets/avatar.png'),
                   ),
                 ],
               ),
               SizedBox(width: 10),
               Column(
                 children: [
-                  Text('Jennifer Kristy Roberts-RN',
+                  Text('FirstUserName User1UATCLGX',
                       style: TextStyle(fontFamily: 'Trebuchet', fontSize: 18)),
                 ],
               ),
@@ -123,6 +132,7 @@ class _SharePostState extends State<SharePost> {
             BlocListener<SharePostBloc, SharePostState>(
               listener: (context, state) {
                 if (state is SharePostLoadedState) {
+                  BlocProvider.of<AllPostsBloc>(context).add(FetchAllPostsEvents());
                   if (state.shared)
                     return ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -214,6 +224,7 @@ class _SharePostState extends State<SharePost> {
               maxLines: null,
             )),
         Container(
+
           child: Column(
             children: <Widget>[
               uploadedMedia(isCamera, isVideo, isGalleryImage, isGalleryVideo),
@@ -305,7 +316,7 @@ class _SharePostState extends State<SharePost> {
       }
     }
     if (isVideo) {
-      return _videoPlayerController.value.initialized
+      return _videoPlayerController.value.isInitialized
           ? AspectRatio(
               aspectRatio: _videoPlayerController.value.aspectRatio,
               child: VideoPlayer(_videoPlayerController),
@@ -320,7 +331,7 @@ class _SharePostState extends State<SharePost> {
       }
     }
     if (isGalleryVideo) {
-      return _videoPlayerController.value.initialized
+      return _videoPlayerController.value.isInitialized
           ? AspectRatio(
               aspectRatio: _videoPlayerController.value.aspectRatio,
               child: VideoPlayer(_videoPlayerController),
@@ -349,5 +360,17 @@ class _SharePostState extends State<SharePost> {
         );
       },
     );
+  }
+
+  String getMediaType(isCamera, isGalleryImage, isGalleryVideo, isVideo) {
+    if (isCamera) {
+      return "Image";
+    } else if (isGalleryImage) {
+      return "Image";
+    } else if (isGalleryVideo) {
+      return "Video";
+    } else if (isVideo) {
+      return "Video";
+    }
   }
 }

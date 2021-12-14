@@ -149,7 +149,8 @@ class _CommentReplyState extends State<CommentReply> {
                   branchId: branchId,
                   comment: replyCommentController.text,
                   commentId: widget.commentId,
-                  userId: '-5906054645658519212'));
+                  userId: '8638313813577931224'));
+              replyCommentController.clear();
             },
           )),
     );

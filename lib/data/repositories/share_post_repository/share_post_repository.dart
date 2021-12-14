@@ -14,14 +14,16 @@ class SharePostRepository {
       @required String categoryId,
       @required String userId,
       @required File file,
-      @required String filename}) async {
+      @required String filename,
+      @required String mediaType}) async {
     var responseData = await sharePostProvider.sharePost(
         categoryId: categoryId,
         userId: userId,
         file: file,
         branchId: branchId,
         postText: postText,
-        filename: filename);
+        filename: filename,
+        mediaType: mediaType);
     if (responseData == null) {
       return null;
     }

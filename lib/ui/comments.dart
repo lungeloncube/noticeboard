@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_bloc.dart';
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_event.dart';
 import 'package:digital_notice_board/blocs/add_comment_bloc/add_comment_state.dart';
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
+import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_event.dart';
 import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_bloc.dart';
 import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_event.dart';
 import 'package:digital_notice_board/blocs/individual_post_bloc/individual_post_state.dart';
@@ -17,6 +21,9 @@ import 'dart:developer' as dev;
 import 'package:intl/intl.dart';
 import 'package:video_player/video_player.dart';
 
+var token =
+    "eyJhbGciOiJSUzI1NiIsImtpZCI6IksxIiwicGkuYXRtIjoid2FvMyJ9.eyJzY29wZSI6Im9wZW5pZCIsImNsaWVudF9pZCI6ImludGVsbGlkZWFsIiwiYWdpZCI6ImVMUkdvNEZCckp1UzU4MUplR1kxQlV3TXhoQUpaUm5RIiwiZW1haWxBZGRyZXNzIjoiRGVhbGVyMVVzZXIxVUFUQ0xHWEBtYWlsaW5hdG9yLmNvbSIsInVzZXJuYW1lIjoiRGVhbGVyMVVzZXIxVUFUQ0xHWEBtYWlsaW5hdG9yLmNvbSIsImV4cCI6MTYxMzgyNzM2NH0.VQDuo6ySx0gKf6dPh9Mha309ah1oBdyGz3Qqe2ybIGoDFo1jjROxkWQXy-QAO-b_wL05Vlxm1DyZL-ChKqm_qULtmfnVdg1bTNZmWMLjMkKtkqUfsVdQ6TL1gO4gu3JLGyiZlwef7o9X_BzfCawfhxSjT11PE7xHIOQXFF77wxUIe7PSrISRcJiK18SJftHD5HbaiXlPwPbn8fDA0QMZe24wZSlNUYMGYwt5gA5t7qINayiDq_6kDTJPAGe4nyRcQ0SVX73GQwQyFQBovsPhQhfVMJCCpT5DoN9q-XLNf77hR0PklXzQdItq3w4OoZuF3mwUG3l4JKesJbGQi1e0Ww";
+
 class Comments extends StatefulWidget {
   final String firstName;
   final String lastName;
@@ -25,6 +32,8 @@ class Comments extends StatefulWidget {
   final String post;
   final postUserId;
   final postId;
+  final mediaType;
+  final mediaUrl;
 
   const Comments({
     Key key,
@@ -35,6 +44,8 @@ class Comments extends StatefulWidget {
     @required this.post,
     @required this.postUserId,
     @required this.postId,
+    @required this.mediaType,
+    @required this.mediaUrl,
   }) : super(key: key);
 
   @override
@@ -53,6 +64,9 @@ class _CommentsState extends State<Comments> {
   Future<void> _initializeVideoPlayerFuture;
   IndividualPostBloc individualPostBloc;
   IndividualPostResponse response;
+  bool _showController = false;
+
+  Timer _timer;
 
   static const String LOG_NAME = 'screen.comments';
 
@@ -64,19 +78,26 @@ class _CommentsState extends State<Comments> {
 
     individualPostBloc
         .add(FetchPostByIdEvents(postId: widget.postId, branchId: 'BR-1001'));
-    _controller = VideoPlayerController.network(
-        "https://asgard.qubedlab.com/digital-notice-board/api/post/download/media/image_picker1203378700.jpg");
 
-    // Initialize the controller and store the Future for later use.
-    _initializeVideoPlayerFuture = _controller.initialize();
-    // Use the controller to loop the video.
+    _controller = VideoPlayerController.network(
+        widget.mediaType == 'Video' ? widget.mediaUrl : null,
+        httpHeaders: {
+          'Authorization': 'Bearer $token',
+        },videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
+      ..initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
+        setState(() {});
+      });
+
     _controller.setLooping(true);
+    _controller.play();
   }
 
   @override
   void dispose() {
     _textController.dispose();
     commentController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -106,26 +127,7 @@ class _CommentsState extends State<Comments> {
           SizedBox(width: 10)
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Wrap the play or pause in a call to `setState`. This ensures the
-          // correct icon is shown.
-          setState(() {
-            // If the video is playing, pause it.
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              // If the video is paused, play it.
-              _controller.play();
-            }
-          });
-        },
-        tooltip: 'play/pause',
-        // Display the correct icon depending on the state of the player.
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
-      ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -194,26 +196,64 @@ class _CommentsState extends State<Comments> {
                     style: TextStyle(fontSize: 16, fontFamily: 'Trebuchet'),
                   ),
                   SizedBox(height: 5),
-                  FutureBuilder(
-                    future: _initializeVideoPlayerFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        // If the VideoPlayerController has finished initialization, use
-                        // the data it provides to limit the aspect ratio of the video.
-                        return AspectRatio(
-                          aspectRatio: _controller.value.aspectRatio,
-                          // Use the VideoPlayer widget to display the video.
-                          child: VideoPlayer(_controller),
-                        );
-                      } else {
-                        // If the VideoPlayerController is still initializing, show a
-                        // loading spinner.
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                    },
-                  ),
+                  widget.mediaType == "Image"
+                      ? Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 300,
+                          child: Image.network(
+                            widget.mediaUrl,
+                            headers: {
+                              'Authorization': 'Bearer $token',
+                            },
+                            fit: BoxFit.fill,
+                          ))
+                      :
+
+                  _controller.value.isInitialized
+                      ? AspectRatio(
+                    aspectRatio: 3/3,
+                    child: Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        VideoPlayer(_controller),
+                        ClosedCaption(text: null),
+                        // Here you can also add Overlay capacities
+                        VideoProgressIndicator(
+                          _controller,
+                          allowScrubbing: true,
+                          padding: EdgeInsets.all(3),
+                          colors: VideoProgressColors(
+                              playedColor: Theme.of(context).primaryColor),
+                        ),
+                        Center(
+                          child: InkWell(
+                            child: Icon(
+                              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: Colors.white,
+                              size: 60,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _controller.value.isPlaying
+                                    ? _controller.pause()
+                                    : _controller.play();
+                                if (_controller.value.isPlaying) _showController = false;
+                                setState(() {});
+                              });
+                            },
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  )
+                      : Container(
+                    height: 250,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+
                 ],
               ),
             ),
@@ -235,6 +275,7 @@ class _CommentsState extends State<Comments> {
             BlocListener<CommentBloc, CommentState>(
               listener: (context, state) {
                 if (state is CommentLoadedState) {
+                  BlocProvider.of<AllPostsBloc>(context).add(FetchAllPostsEvents());
                   return state.commented
                       ? individualPostBloc.add(FetchPostByIdEvents(
                           postId: widget.postId, branchId: 'BR-1001'))
@@ -277,6 +318,7 @@ class _CommentsState extends State<Comments> {
                   comment: commentController.text,
                   userId: widget.postUserId.toString(),
                   postId: widget.postId));
+              commentController.clear();
             },
           )),
     );

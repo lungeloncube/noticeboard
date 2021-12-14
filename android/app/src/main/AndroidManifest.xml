@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.digital_notice_board">
    <application
-        android:label="digital_notice_board"
+        android:label="Notice Board"
         android:icon="@mipmap/ic_launcher">
         android:requestLegacyExternalStorage="true"
         <activity

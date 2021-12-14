@@ -16,18 +16,20 @@ class SharePostProvider {
       @required String userId,
       @required File file,
       @required String branchId,
-      @required filename}) async {
+      @required filename,
+      @required mediaType}) async {
     var headers = await GeneralFunctions.getMultiPartHeaders();
     var url = '${Url.sharePostUrl}$branchId';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
-    request.files.add(http.MultipartFile.fromBytes(
+     request.files.add(http.MultipartFile.fromBytes(
         'file', File(file.path).readAsBytesSync(),
         filename: file.path.split("/").last));
     request.headers.addAll(headers);
     request.fields['postText'] = postText;
     request.fields['categoryId'] = categoryId;
     request.fields['userId'] = userId;
+    request.fields['mediaType'] = mediaType;
 
     var response = await request.send();
     if (response.statusCode == 200) {

@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_post_state.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_bloc.dart';
 import 'package:digital_notice_board/blocs/all_posts_bloc/all_posts_event.dart';
@@ -38,6 +35,8 @@ class _HomePageState extends State<HomePage> {
   AllPostsBloc allPostsBloc;
   LikePostBloc likePostBloc;
   PostsResponse postsResponse;
+  var token =
+      "eyJhbGciOiJSUzI1NiIsImtpZCI6IksxIiwicGkuYXRtIjoid2FvMyJ9.eyJzY29wZSI6Im9wZW5pZCIsImNsaWVudF9pZCI6ImludGVsbGlkZWFsIiwiYWdpZCI6ImVMUkdvNEZCckp1UzU4MUplR1kxQlV3TXhoQUpaUm5RIiwiZW1haWxBZGRyZXNzIjoiRGVhbGVyMVVzZXIxVUFUQ0xHWEBtYWlsaW5hdG9yLmNvbSIsInVzZXJuYW1lIjoiRGVhbGVyMVVzZXIxVUFUQ0xHWEBtYWlsaW5hdG9yLmNvbSIsImV4cCI6MTYxMzgyNzM2NH0.VQDuo6ySx0gKf6dPh9Mha309ah1oBdyGz3Qqe2ybIGoDFo1jjROxkWQXy-QAO-b_wL05Vlxm1DyZL-ChKqm_qULtmfnVdg1bTNZmWMLjMkKtkqUfsVdQ6TL1gO4gu3JLGyiZlwef7o9X_BzfCawfhxSjT11PE7xHIOQXFF77wxUIe7PSrISRcJiK18SJftHD5HbaiXlPwPbn8fDA0QMZe24wZSlNUYMGYwt5gA5t7qINayiDq_6kDTJPAGe4nyRcQ0SVX73GQwQyFQBovsPhQhfVMJCCpT5DoN9q-XLNf77hR0PklXzQdItq3w4OoZuF3mwUG3l4JKesJbGQi1e0Ww";
 
   @override
   void initState() {
@@ -131,38 +130,32 @@ class _HomePageState extends State<HomePage> {
                     return LoadingIndicator();
                   } else if (state is AllPostsLoadedState) {
                     if (state.postsResponse.posts.isEmpty) {
-                      return Center(child: Text("No Posts "));
+                      return Center(child: Text("No Posts"));
                     } else {
                       return _buildFeed(width, state.postsResponse);
                     }
                   } else if (state is AllPostsErrorState) {
                     return Center(
-                      child: Container(
-                        height: 600,
-                        width: double.infinity,
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                "An error occured while fetching the posts",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                  fontFamily: 'CenturyGothicBold',
-                                ),
-                              ),
-                              OutlinedButton.icon(
-                                label: Text("Retry"),
-                                icon: Icon(Icons.refresh,
-                                    color: Colors.blue[400]),
-                                onPressed: () {
-                                  allPostsBloc.add(FetchAllPostsEvents());
-                                },
-                              )
-                            ],
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "An error occured while fetching the posts",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontFamily: 'CenturyGothicBold',
+                            ),
                           ),
-                        ),
+                          OutlinedButton.icon(
+                            label: Text("Retry"),
+                            icon: Icon(Icons.refresh, color: Colors.blue[400]),
+                            onPressed: () {
+                              allPostsBloc.add(FetchAllPostsEvents());
+                            },
+                          )
+                        ],
                       ),
                     );
                   }
@@ -260,27 +253,50 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text('${postsResponse.posts[index].postText}',
-                          textAlign: TextAlign.start,
-                          style:
-                              TextStyle(fontFamily: 'Trebuchet', fontSize: 16)),
-                      SizedBox(height: 15),
-                      displayMedia(
-                              postsResponse.posts[index].mediaFiles[0].type,
-                              postsResponse.posts[index].mediaFiles[0].url,
-                              postsResponse
-                                  .posts[index].mediaFiles[0].thumbnailUrl) ??
-                          IconButton(
-                              icon: Icon(Icons.play_circle_fill_rounded),
-                              onPressed: () {}),
-                      SizedBox(height: 15),
-                    ],
-                  ),
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Comments(
+                          mediaType:
+                          postsResponse.posts[index].mediaFiles[0].type,
+                          firstName: postsResponse.posts[index].users.firstName,
+                          lastName: postsResponse.posts[index].users.lastName,
+                          date: postsResponse.posts[index].createdAt,
+                          post: postsResponse.posts[index].postText,
+                          url: postsResponse.posts[index].users.thumbnailUrl,
+                          postId: postsResponse.posts[index].postId,
+                          postUserId: postsResponse.posts[index].users.userId,
+                          mediaUrl:
+                          postsResponse.posts[index].mediaFiles[0].url,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                      child:
+                      Column(
+                        children: [
+                          Text('${postsResponse.posts[index].postText}',
+                              textAlign: TextAlign.start,
+                              style: TextStyle(
+                                  fontFamily: 'Trebuchet', fontSize: 16)),
+                          SizedBox(height: 15),
+                          postsResponse.posts[index].mediaFiles.isNotEmpty
+                              ? displayMedia(
+                                  postsResponse.posts[index].mediaFiles[0].type,
+                                  postsResponse.posts[index].mediaFiles[0].url,
+                                  postsResponse
+                                      .posts[index].mediaFiles[0].thumbnailUrl)
+                              : SizedBox(height: 5),
+                          SizedBox(height: 15),
+                        ],
+                      )
+                    ),
                 ),
+
                 _buildFeedActions(
                     context,
                     index,
@@ -315,6 +331,7 @@ class _HomePageState extends State<HomePage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => Comments(
+                          mediaType: response.posts[index].mediaFiles[0].type,
                           firstName: response.posts[index].users.firstName,
                           lastName: response.posts[index].users.lastName,
                           date: response.posts[index].createdAt,
@@ -322,6 +339,7 @@ class _HomePageState extends State<HomePage> {
                           url: response.posts[index].users.thumbnailUrl,
                           postId: response.posts[index].postId,
                           postUserId: response.posts[index].users.userId,
+                          mediaUrl: response.posts[index].mediaFiles[0].url,
                         ),
                       ),
                     );
@@ -371,6 +389,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => Comments(
+                        mediaType: response.posts[index].mediaFiles[0].type,
                         firstName: response.posts[index].users.firstName,
                         lastName: response.posts[index].users.lastName,
                         date: response.posts[index].createdAt,
@@ -378,6 +397,7 @@ class _HomePageState extends State<HomePage> {
                         url: response.posts[index].users.thumbnailUrl,
                         postId: response.posts[index].postId,
                         postUserId: response.posts[index].users.userId,
+                        mediaUrl: response.posts[index].mediaFiles[0].url,
                       ),
                     ),
                   );
@@ -404,18 +424,24 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  displayMedia(String mediaType, String mediaUrl, String thumbnailUrl) {
+  Widget displayMedia(String mediaType, String mediaUrl, String thumbnailUrl) {
     if (mediaType.contains("Image")) {
-      return Image.network(mediaUrl);
-    } else if (mediaType.contains("Video")) {
-      return Image.network(thumbnailUrl);
+      print(mediaUrl);
+      return Container(
+          width: MediaQuery.of(context).size.width,
+          child: Image.network(
+            mediaUrl,
+            headers: {
+              'Authorization': 'Bearer $token',
+            },
+          ));
     } else {
       return Container(
-        child: Image.asset(
-          'assets/post_image.jpg',
-          fit: BoxFit.fill,
-        ),
-      );
+          width: MediaQuery.of(context).size.width,
+          child: Image.asset(
+            'assets/video_thumbnail.png',
+            fit: BoxFit.fill,
+          ));
     }
   }
 }

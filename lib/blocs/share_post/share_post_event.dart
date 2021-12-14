@@ -16,14 +16,18 @@ class ShareEvent extends SharePostEvent {
   final String categoryId;
   final String branchId;
   final String filename;
+  final String mediaType;
 
   ShareEvent(
-      {@required this.filename,@required this.categoryId,
+      {@required this.filename,
+      @required this.mediaType,
+      @required this.categoryId,
       @required this.file,
       @required this.userId,
       @required this.postText,
       @required this.branchId});
 
   @override
-  List<Object> get props => [postText, userId, file, postText, branchId, filename];
+  List<Object> get props =>
+      [postText, userId, file, postText, branchId, filename, mediaType];
 }

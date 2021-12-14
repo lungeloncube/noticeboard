@@ -54,4 +54,21 @@ class AllPostsProvider {
     }
     throw Exception('An error occurred. Try again later.');
   }
+
+
+   Future getMedia(
+      {@required String mediaUrl}) async {
+    var headers = await GeneralFunctions.getHeaders();
+    var url = mediaUrl;
+    var response = await client.get(Uri.parse(url), headers: headers);
+    var jsonResponse = response.body;
+    if (response.statusCode == 200) {
+      if (response.body.isNotEmpty) {
+        return json.decode(jsonResponse);
+      } else {
+        print("nothing in the comment body");
+      }
+    }
+    throw Exception('An error occurred. Try again later.');
+  }
 }
